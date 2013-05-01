@@ -1,7 +1,14 @@
 {
+	"name": "ontheroad/api",
+	"description": "On the road API",
 	"require": {
 		"laravel/framework": "4.0.*"
 	},
+	"require-dev": {
+		    "mockery/mockery": "0.7.2",
+		    "behat/behat": "2.4.*@stable",
+		    "guzzle/guzzle": "2.4.*"
+		},
 	"autoload": {
 		"classmap": [
 			"app/commands",
@@ -16,7 +23,8 @@
 		"post-update-cmd": "php artisan optimize"
 	},
 	"config": {
-		"preferred-install": "dist"
+		"preferred-install": "dist",
+		"bin-dir": "bin/"
 	},
 	"minimum-stability": "dev"
 }
