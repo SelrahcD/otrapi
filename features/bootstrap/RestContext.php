@@ -25,6 +25,13 @@ class RestContext extends BehatContext
     {
         $this->restObject = new stdClass();
         $this->client     = new Guzzle\Service\Client();
+        $eventDispatcher = $this->client->getEventDispatcher();
+        $eventDispatcher->addListener('request.error', function($event)
+          {
+            $event->stopPropagation();
+          }, 0);
+        
+        $this->client->setEventDispatcher($eventDispatcher);
         $this->parameters = $parameters;
     }
 
@@ -93,7 +100,7 @@ class RestContext extends BehatContext
     /**
      * @Then /^the response status code should be (\d+)$/
      */
-    public function theResponseStatusCodeShouldBe($arg1)
+    public function theResponseStatusCodeShouldBe($httpStatus)
     {
         if ((string)$this->response->getStatusCode() !== $httpStatus)
         {
