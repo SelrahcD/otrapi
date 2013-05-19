@@ -24,6 +24,11 @@ class FluentTokenRepository implements TokenRepositoryInterface {
 		$this->newQuery()->insert($tokenArray);
 	}
 
+	public function deleteExpiredTokens()
+	{
+		$this->newQuery()->where('expiration', '<', new DateTime)->delete();
+	}
+
 	protected function newQuery()
 	{
 		return $this->db->table($this->tableName);
