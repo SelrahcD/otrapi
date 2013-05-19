@@ -11,5 +11,3 @@ App::bind('UserRepositoryInterface', function()
 	});
 
 App::instance('Illuminate\Hashing\HasherInterface', App::make('hash'));
-
-App::instance('TokenFactory', new TokenFactory(10800));
