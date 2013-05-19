@@ -47,6 +47,11 @@ class AuthController extends BaseController {
 		$this->hasher          = $hasher;
 	}
 
+	/**
+	 * Authenticate a user with credentials and return a token if user is ok
+	 * 
+	 * @return Token
+	 */
 	public function getToken()
 	{
 
