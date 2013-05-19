@@ -20,3 +20,11 @@ Scenario: I cant get a token if I provide unvalid password
 	When I make a POST request on "/auth"
 	Then the response is JSON
 	Then the response status code should be 401
+
+Scenario: A command can delete expired sessions from database
+	Given that I'm in the root directory
+	When I run artisan's task token:clean
+	Then I should get:
+	"""
+	All expired tokens were deleted.
+	"""
