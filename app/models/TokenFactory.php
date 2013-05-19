@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+
 class TokenFactory {
 
 	/**
@@ -52,8 +54,7 @@ class TokenFactory {
 	 */
 	protected function setId(Token $token)
 	{
-		$id = md5(uniqid(rand(), true));
-		$attributes = array('id' => $id);
+		$attributes = array('id' => Str::random(20));
 		$token->fill($attributes);
 	}
 
