@@ -9,6 +9,14 @@ class FluentUserRepositoryTest extends TestCase {
 		m::close();
 	}
 
+	public function testMakeReturnsAUser()
+	{
+		$mocks = $this->getMocks();
+		$repo = $this->getRepo($mocks);
+		$result = $repo->make($attributes = array());
+		$this->assertInstanceOf('User', $result);
+	}
+
 	public function testGetUserByCredentialsReturnsNullIfNotFound()
 	{
 		$mocks = $this->getMocks();
