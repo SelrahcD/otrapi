@@ -83,3 +83,14 @@ App::error(function(PermissionException $e)
 		'error' => $e->getMessage() ?: $default_message,
 	), 403);
 });
+
+// AuthenticationException handler
+App::error(function(AuthenticationException $e)
+{
+	$default_message = 'Invalid API key';
+	$headers['WWW-Authenticate'] = 'Basic realm="REST API"';
+
+	return Response::json(array(
+		'error' => $e->getMessage() ?: $default_message,
+	), 401, $headers);
+});
