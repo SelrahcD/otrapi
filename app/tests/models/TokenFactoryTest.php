@@ -13,7 +13,7 @@ class TokenFactoryTest extends TestCase {
 
 	public function setUp()
 	{
-		$this->factory = new TokenFactory;
+		$this->factory = new TokenFactory(1);
 	}
 
 	public function testCreateTokenForUserReturnsAValidToken()
@@ -25,5 +25,6 @@ class TokenFactoryTest extends TestCase {
 		$this->assertEquals(1, $token->getUserId());
 		$this->assertNotNull($token->getId());
 		$this->assertNotNull($token->getExpiration());
+		$this->assertInstanceOf('DateTime', $token->getExpiration());
 	}
 }

@@ -21,7 +21,7 @@ class Token implements JsonableInterface {
 	/**
 	 * Expiration time
 	 * 
-	 * @var int
+	 * @var DateTime
 	 */
 	protected $expiration;
 	

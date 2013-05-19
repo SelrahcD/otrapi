@@ -81,7 +81,7 @@ class AuthControllerTest extends TestCase {
 	private function getMocks()
 	{
 		return array(
-			'tokenFactory' => Mockery::mock(new TokenFactory),
+			'tokenFactory' => Mockery::mock(new TokenFactory(1)),
 			'userRepo'     => Mockery::mock('UserRepositoryInterface'),
 			'tokenRepo'    => Mockery::mock('TokenRepositoryInterface'),
 			'hasher'	   => Mockery::mock('Illuminate\Hashing\HasherInterface'),
