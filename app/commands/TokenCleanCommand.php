@@ -49,14 +49,4 @@ class TokenCleanCommand extends Command {
 		$this->info("All expired tokens were deleted.");
 	}
 
-	/**
-	 * Generate a random key for the application.
-	 *
-	 * @return string
-	 */
-	protected function getRandomKey()
-	{
-		return Str::random(32);
-	}
-
 }
