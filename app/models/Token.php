@@ -85,6 +85,16 @@ class Token implements JsonableInterface {
 	}
 
 	/**
+	 * Indicate if the token is valid
+	 * 
+	 * @return boolean
+	 */
+	public function isValid()
+	{
+		return (bool) $this->expiration->diff( new DateTime )->invert;
+	}
+
+	/**
 	 * Convert the model instance to an array.
 	 *
 	 * @return array
