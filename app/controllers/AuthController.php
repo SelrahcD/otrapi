@@ -18,10 +18,27 @@ class AuthController extends BaseController {
 	 */
 	protected $tokenRepository;
 
+	/**
+	 * Token factory
+	 * 
+	 * @var TokenFactory
+	 */
 	protected $tokenFactory;
 
+	/**
+	 * Hasher
+	 * 
+	 * @var Illuminate\Hashing\HasherInterface
+	 */
 	protected $hasher;
 
+	/**
+	 * Constructor
+	 * @param TokenFactory             $tokenFactory    
+	 * @param TokenRepositoryInterface $tokenRepository 
+	 * @param UserRepositoryInterface  $userRepository  
+	 * @param Illuminate\Hashing\HasherInterface          $hasher          
+	 */
 	public function __construct(TokenFactory $tokenFactory, TokenRepositoryInterface $tokenRepository, UserRepositoryInterface $userRepository, HasherInterface $hasher)
 	{
 		$this->tokenFactory    = $tokenFactory;
