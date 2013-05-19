@@ -28,7 +28,13 @@ class AuthTokenServiceProvider extends ServiceProvider {
 			return new TokenCleanCommand($app['TokenRepositoryInterface']);
 		});
 
+		$this->app['command.token.delete'] = $this->app->share(function($app)
+		{
+			return new TokenDeleteCommand($app['TokenRepositoryInterface']);
+		});
+
 		$this->commands('command.token.clean');
+		$this->commands('command.token.delete');
 	}
 
 	/**
@@ -38,7 +44,7 @@ class AuthTokenServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('command.token.clean');
+		return array('command.token.clean', 'command.token.delete', 'TokenFactory');
 	}
 	
 }

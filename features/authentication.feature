@@ -28,3 +28,11 @@ Scenario: A command can delete expired sessions from database
 	"""
 	All expired tokens were deleted.
 	"""
+
+Scenario: A command can delete all tokens
+	Given that I'm in the root directory
+	When I run artisan's task token:delete
+	Then I should get:
+	"""
+	All tokens were deleted.
+	"""

@@ -2,21 +2,21 @@
 
 use Illuminate\Console\Command;
 
-class TokenCleanCommand extends Command {
+class TokenDeleteCommand extends Command {
 
 	/**
 	 * The console command name.
 	 *
 	 * @var string
 	 */
-	protected $name = 'token:clean';
+	protected $name = 'token:delete';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = "Delete expired tokens";
+	protected $description = "Delete all tokens";
 
 	/**
 	 * Token repository
@@ -44,9 +44,9 @@ class TokenCleanCommand extends Command {
 	 */
 	public function fire()
 	{
-		$this->tokenRepository->deleteExpired();
+		$this->tokenRepository->deleteAll();
 
-		$this->info("All expired tokens were deleted.");
+		$this->info("All tokens were deleted.");
 	}
 
 }

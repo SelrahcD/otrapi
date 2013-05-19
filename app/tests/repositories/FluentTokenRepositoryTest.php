@@ -30,14 +30,23 @@ class FluentTokenRepositoryTest extends TestCase {
 		$repo->store($token);
 	}
 
-	public function testDeleteExpiredTokensDeleteAllExpiredTokens()
+	public function testDeleteExpiredDeleteAllExpiredTokens()
 	{
 		$mocks = $this->getMocks();
 		$repo = $this->getRepo($mocks);
 		$mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($mocks['db']);
 		$mocks['db']->shouldReceive('where')->once()->with('expiration', '<', 'DateTime')->andReturn($mocks['db']);
 		$mocks['db']->shouldReceive('delete')->once();
-		$repo->deleteExpiredTokens();
+		$repo->deleteExpired();
+	}
+
+	public function testDeleteAllDeleteAllTokens()
+	{
+		$mocks = $this->getMocks();
+		$repo = $this->getRepo($mocks);
+		$mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($mocks['db']);
+		$mocks['db']->shouldReceive('truncate')->once();
+		$repo->deleteAll();
 	}
 
 	private function getMocks()
