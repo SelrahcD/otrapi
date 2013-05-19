@@ -2,3 +2,5 @@ default:
   context:
     parameters:
         base_url: http://api.ontheroad.dev
+        root_dir: /var/www/api
+        cli_en: local

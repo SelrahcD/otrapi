@@ -28,6 +28,7 @@ class FeatureContext extends BehatContext
     public function __construct(array $parameters)
     {
         $this->useContext('RestContext', new RestContext($parameters));
+        $this->useContext('CLIContext', new CLIContext($parameters));
     }
 
 //
