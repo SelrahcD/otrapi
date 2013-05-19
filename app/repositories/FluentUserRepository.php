@@ -12,6 +12,11 @@ class FluentUserRepository implements UserRepositoryInterface {
 	{
 		$this->db = $db;
 	}
+
+	public function make($attributes = array())
+	{
+		return $this->buildUser($attributes);
+	}
 	
 	public function getUserByCredentials(array $credentials)
 	{
@@ -19,7 +24,7 @@ class FluentUserRepository implements UserRepositoryInterface {
 		return $this->buildUser($attributes);
 	}
 
-	protected function buildUser($attributes)
+	protected function buildUser($attributes, $exists = false)
 	{
 		if(is_null($attributes))
 		{
@@ -32,7 +37,7 @@ class FluentUserRepository implements UserRepositoryInterface {
 		}
 
 		$user = new User($attributes);
-		$user->exists = true;
+		$user->exists = $exists;
 
 		return $user;
 	}
