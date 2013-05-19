@@ -48,18 +48,24 @@ class CLIContext extends BehatContext {
             $command .= ' --env='. $env;
         }
 
-        exec($command, $output);
+        exec($command, $output, $returnVar);
+
+        if($returnVar)
+        {
+            throw new Exception('Error occured while trying to execute task. Code : ' . $returnVar);
+        }
+
         $this->output = trim(implode("\n", $output));
     }
 
     /** @Then /^I should get:$/ */
-        public function iShouldGet(PyStringNode $string)
-        {
-            if ((string) $string !== $this->output) {
-                throw new Exception(
-                    "Actual output is:\n" . $this->output
-                );
-            }
+    public function iShouldGet(PyStringNode $string)
+    {
+        if ((string) $string !== $this->output) {
+            throw new Exception(
+                "Actual output is:\n" . $this->output
+            );
         }
+    }
 
 }
