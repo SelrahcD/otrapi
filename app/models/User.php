@@ -16,6 +16,11 @@ class User extends Eloquent {
 	 */
 	protected $hidden = array('password');
 
+	protected function setPasswordAttribute($password)
+	{
+		$this->attributes['password'] = Hash::make($password);
+	}
+
 	public function validate()
 	{
 		return true;
