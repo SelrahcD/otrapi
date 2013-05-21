@@ -7,7 +7,7 @@ App::bind('TokenRepositoryInterface', function()
 
 App::bind('UserRepositoryInterface', function()
 	{
-		return new FluentUserRepository(App::make('db'));
+		return new DatabaseUserRepository(new User);
 	});
 
 App::instance('Illuminate\Hashing\HasherInterface', App::make('hash'));
