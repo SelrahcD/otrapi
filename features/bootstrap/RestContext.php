@@ -28,7 +28,10 @@ class RestContext extends BehatContext
         $eventDispatcher = $this->client->getEventDispatcher();
         $eventDispatcher->addListener('request.error', function($event)
           {
-            $event->stopPropagation();
+            if($event['response']->getStatusCode() !== 500)
+            {
+              $event->stopPropagation();
+            }
           }, 0);
         
         $this->client->setEventDispatcher($eventDispatcher);
@@ -49,9 +52,9 @@ class RestContext extends BehatContext
     } 
 
      /**
-     * @Given /^that my ([^"]*) is "([^"]*)"$/
+     * @Given /^that ([^"]*) is "([^"]*)"$/
      */
-    public function thatMyParameterIs($name, $value)
+    public function thatParameterIs($name, $value)
     {
         $this->restObject->$name = $value;
     }
@@ -107,6 +110,24 @@ class RestContext extends BehatContext
            throw new \Exception('HTTP code does not match '.$httpStatus.' (actual: '.$this->response->getStatusCode().')');
         }
     }
+
+    /**
+     * @Then /^the response should contain ([^"]*) is "([^"]*)"$/
+     */
+    public function theResponseShouldContain($name, $value)
+    {
+       $data = json_decode($this->response->getBody(true));
+       var_dump($data);
+    }
+
+    /**
+     * @Then /^the response should not contain ([^"]*)$/
+     */
+    public function theResponseShouldNotContainPassword($name)
+    {
+        throw new PendingException();
+    }
+
 
 
 }
