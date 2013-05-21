@@ -16,3 +16,4 @@ Route::get('/', function()
 });
 
 Route::post('/auth', 'AuthController@getToken');
+Route::post('/users', 'UsersController@create');
