@@ -15,4 +15,9 @@ class User extends Eloquent {
 	 * @var array
 	 */
 	protected $hidden = array('password');
+
+	public function validate()
+	{
+		return true;
+	}
 }
