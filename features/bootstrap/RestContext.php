@@ -112,20 +112,39 @@ class RestContext extends BehatContext
     }
 
     /**
-     * @Then /^the response should contain ([^"]*) is "([^"]*)"$/
+     * @Then /^the response should contain ([^"]*)$/
      */
-    public function theResponseShouldContain($name, $value)
+    public function theResponseShouldContain($name)
     {
        $data = json_decode($this->response->getBody(true));
-       var_dump($data);
+       if(!property_exists($data, $name))
+       {
+          throw new \Exception('Response doesn\'t contain ' . $name);
+       }
+    }
+
+    /**
+     * @Then /^the response should contain ([^"]*) and is "([^"]*)"$/
+     */
+    public function theResponseShouldContainAndValue($name, $value)
+    {
+       $data = json_decode($this->response->getBody(true));
+       if($data->{$name} != $value)
+       {
+          throw new \Exception('Value doesn\'t not match expected value. Received : ' . $data->{$name} . ' Expected : ' . $value);
+       }
     }
 
     /**
      * @Then /^the response should not contain ([^"]*)$/
      */
-    public function theResponseShouldNotContainPassword($name)
+    public function theResponseShouldNotContain($name)
     {
-        throw new PendingException();
+        $data = json_decode($this->response->getBody(true));
+        if(property_exists($data, $name))
+        {
+          throw new \Exception('Response contains ' . $name . ' and should not');
+        }
     }
 
 
