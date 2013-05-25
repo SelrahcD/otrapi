@@ -3,4 +3,4 @@ default:
     parameters:
         base_url: http://api.ontheroad.dev
         root_dir: /var/www/api
-        cli_en: local
+        cli_env: local
