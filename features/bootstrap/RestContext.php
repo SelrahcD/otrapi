@@ -7,15 +7,17 @@ use Symfony\Component\Yaml\Yaml;
  */
 class RestContext extends BehatContext
 {
-
     private $restObject        = null;
     private $restObjectType    = null;
     // private $_restObjectMethod  = 'get';
     private $client            = null;
     private $response          = null;
     private $requestUrl        = null;
+    private $token           = null;
 
     private $parameters = array();
+
+    protected static $userTokens = array();
 
     /**
      * Initializes context.
@@ -70,20 +72,25 @@ class RestContext extends BehatContext
         switch (strtoupper($method))
         {
             case 'GET':
-                $response = $this->_client->get($this->requestUrl.'?'.http_build_str((array)$this->restObject))->send();
+                $request = $this->client->get($this->requestUrl.'?'.http_build_str((array)$this->restObject));
                 break;
 
             case 'POST':
                 $postFields = (array)$this->restObject;
-                $response = $this->client->post($this->requestUrl,null,$postFields)->send();
+                $request = $this->client->post($this->requestUrl,null,$postFields);
                 break;
 
             case 'DELETE':
-                $response = $this->client->delete($this->requestUrl.'?'.http_build_str((array)$this->restObject))->send();
+                $request = $this->client->delete($this->requestUrl.'?'.http_build_str((array)$this->restObject));
                   break;
         }
 
-            $this->response = $response;
+        if($this->token)
+        {
+            $request->setAuth($this->token, 'x');
+        }
+
+        $this->response = $request->send();
     }
 
 
@@ -146,6 +153,47 @@ class RestContext extends BehatContext
           throw new \Exception('Response contains ' . $name . ' and should not');
         }
     }
+
+     /**
+     * @Given /^that I\'m connected as user ([^"]*)$/
+     */
+    public function thatIMConnectedAsUser($user)
+    {
+        if(array_key_exists($user, static::$userTokens))
+        {
+            $token = static::$userTokens[$user];
+        }
+        else
+        {
+            $token = $this->getToken($user);
+            static::$userTokens[$user] = $token;
+        }
+
+        $this->token = $token;
+
+    }
+
+    protected function getToken($user)
+    {
+        $users = $this->getParameter('users');
+        if(!array_key_exists($user, $users))
+        {
+            throw \Exception('Unknown user ' . $user . '. Can\'t login. Please insert data in behat.yml');
+        }
+
+        $baseUrl = $this->getParameter('base_url');
+        $postFields = array(
+            'email' => $user,
+            'password' => $users[$user],
+            );
+
+        $response = $this->client->post($baseUrl.'/auth' ,null,$postFields)->send();
+
+        $data = json_decode($response->getBody(true));
+
+        return $data->token;
+    }
+
 
 
 
