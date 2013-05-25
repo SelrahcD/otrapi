@@ -12,11 +12,11 @@ class User extends Eloquent implements UserInterface {
 	protected $fillable = array('id', 'email', 'password', 'created_at', 'updated_at');
 
 	/**
-	 * The attributes that should be hidden for arrays.
+	 * The attributes that should be visible in arrays.
 	 *
-	 * @var array
+	 * @var arrays
 	 */
-	protected $hidden = array('password');
+	protected $visible = array('id', 'email', 'created_at', 'updated_at');
 
 	protected function setPasswordAttribute($password)
 	{
