@@ -38,6 +38,13 @@ class UsersControllerTest extends TestCase {
 		$this->controller->create();
 	}
 
+	public function testShowMeShowCurrentUserData()
+	{
+		Auth::shouldReceive('user')->once()->andReturn($user = m::mock('User'));
+		$response = $this->controller->showMe();
+		$this->assertEquals($user, $response);
+	}
+
 	private function getMocks()
 	{
 		return array(

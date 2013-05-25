@@ -37,5 +37,15 @@ class UsersController extends BaseController {
 
 		return $user;
 	}
+
+	/**
+	 * Show current user
+	 * 
+	 * @return User
+	 */
+	public function showMe()
+	{
+		return Auth::user();
+	}
 	
 }
