@@ -30,7 +30,7 @@ class RestContext extends BehatContext
         $eventDispatcher = $this->client->getEventDispatcher();
         $eventDispatcher->addListener('request.error', function($event)
           {
-            if($event['response']->getStatusCode() !== 500)
+            if(!in_array($event['response']->getStatusCode(), array(500)))
             {
               $event->stopPropagation();
             }
@@ -80,6 +80,14 @@ class RestContext extends BehatContext
                 $request = $this->client->post($this->requestUrl,null,$postFields);
                 break;
 
+            case 'PUT':
+                $request = $this->client->put($this->requestUrl,null,null);
+                foreach((array)$this->restObject as $key => $value)
+                {
+                  $request->getQuery()->set($key, $value);
+                }
+                break;
+
             case 'DELETE':
                 $request = $this->client->delete($this->requestUrl.'?'.http_build_str((array)$this->restObject));
                   break;
@@ -99,9 +107,7 @@ class RestContext extends BehatContext
      */
     public function theResponseIsJson()
     {
-        $data = json_decode($this->response->getBody(true));
-
-        if (empty($data))
+        if ($this->response->getContentType() !== 'application/json')
         {
             throw new Exception("Response was not JSON\n" . $this->response);
         }
@@ -123,8 +129,9 @@ class RestContext extends BehatContext
      */
     public function theResponseShouldContain($name)
     {
-       $data = json_decode($this->response->getBody(true));
-       if(!property_exists($data, $name))
+       $data = json_decode((string) $this->response->getBody());
+
+       if(!$data || !property_exists($data, $name))
        {
           throw new \Exception('Response doesn\'t contain ' . $name);
        }
@@ -135,7 +142,8 @@ class RestContext extends BehatContext
      */
     public function theResponseShouldContainAndValue($name, $value)
     {
-       $data = json_decode($this->response->getBody(true));
+       $data = json_decode((string) $this->response->getBody());
+
        if($data->{$name} != $value)
        {
           throw new \Exception('Value doesn\'t not match expected value. Received : ' . $data->{$name} . ' Expected : ' . $value);
@@ -147,7 +155,8 @@ class RestContext extends BehatContext
      */
     public function theResponseShouldNotContain($name)
     {
-        $data = json_decode($this->response->getBody(true));
+        $data = json_decode((string) $this->response->getBody());
+
         if(property_exists($data, $name))
         {
           throw new \Exception('Response contains ' . $name . ' and should not');
@@ -190,6 +199,11 @@ class RestContext extends BehatContext
         $response = $this->client->post($baseUrl.'/auth' ,null,$postFields)->send();
 
         $data = json_decode($response->getBody(true));
+
+        if(!property_exists($data, 'token'))
+        {
+          throw new \Exception('No token provided in response. Reponse :' . $response->getBody(true));
+        }
 
         return $data->token;
     }
