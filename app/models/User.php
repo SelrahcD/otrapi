@@ -1,6 +1,8 @@
 <?php
 
-class User extends Eloquent {
+use Illuminate\Auth\UserInterface;
+
+class User extends Eloquent implements UserInterface {
 
 	/**
 	 * The attributes that are mass assignable.
@@ -24,5 +26,25 @@ class User extends Eloquent {
 	public function validate()
 	{
 		return true;
+	}
+
+	/**
+	 * Get the unique identifier for the user.
+	 *
+	 * @return mixed
+	 */
+	public function getAuthIdentifier()
+	{
+		return $this->getKey();
+	}
+
+	/**
+	 * Get the password for the user.
+	 *
+	 * @return string
+	 */
+	public function getAuthPassword()
+	{
+		return $this->password;
 	}
 }
