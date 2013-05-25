@@ -45,6 +45,30 @@ class UsersControllerTest extends TestCase {
 		$this->assertEquals($user, $response);
 	}
 
+	/**
+	 * @expectedException ValidationException
+	 */
+	public function testEditMeThrowsValidationExceptionIfDataIsntValid()
+	{
+		Input::shouldReceive('all')->once()->andReturn($input = array());
+		Auth::shouldReceive('user')->once()->andReturn($user = m::mock('User'));
+		$user->shouldReceive('fill')->once()->with($input);
+		$user->shouldReceive('validate')->once()->andReturn(false);
+		$user->shouldReceive('errors')->once()->andReturn($errors = array());
+		$this->controller->editMe();
+	}
+
+	public function testEditMeUpdatesUserIfDataAreValid()
+	{
+		Input::shouldReceive('all')->once()->andReturn($input = array());
+		Auth::shouldReceive('user')->once()->andReturn($user = m::mock('User'));
+		$user->shouldReceive('fill')->once()->with($input);
+		$user->shouldReceive('validate')->once()->andReturn(true);
+		$this->mocks['userRepo']->shouldReceive('store')->once()->with($user);
+		$response = $this->controller->editMe();
+		$this->assertEquals($user, $response);
+	}
+
 	private function getMocks()
 	{
 		return array(

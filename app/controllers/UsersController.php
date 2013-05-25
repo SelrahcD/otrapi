@@ -47,5 +47,26 @@ class UsersController extends BaseController {
 	{
 		return Auth::user();
 	}
+
+	/**
+	 * Edit current user
+	 * 
+	 * @return User
+	 */
+	public function editMe()
+	{
+		$user = Auth::user();
+
+		$user->fill(Input::all());
+
+		if(!$user->validate())
+		{
+			throw new ValidationException($user->errors());
+		}
+
+		$this->userRepo->store($user);
+
+		return $user;
+	}
 	
 }
