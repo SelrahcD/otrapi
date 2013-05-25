@@ -40,6 +40,18 @@ class DatabaseUserRepository implements UserRepositoryInterface {
 		return $this->model->newQuery()->where('email', '=', $credentials['email'])->first();
 	}
 
+
+	/**
+	 * Get a user using a token
+	 * 
+	 * @param  string $token 
+	 * @return User | null
+	 */
+	public function getUserByToken($token)
+	{
+		return $this->model->newQuery()->join('tokens', 'users.id', '=', 'tokens.user_id')->where('tokens.id', '=', $token)->where('expiration', '>', new DateTime)->first();
+	}
+
 	/**
 	 * Store an user
 	 * 

@@ -52,6 +52,32 @@ class DatabaseUserRepositoryTest extends TestCase {
 		$this->assertInstanceOf('User', $result);
 	}
 
+	public function testGetUserByTokenReturnsUserIfFoundAndTokenIsValid()
+	{
+		$mocks = $this->getMocks();
+		$repo = $this->getRepo($mocks);
+		$mocks['model']->shouldReceive('newQuery')->once()->andReturn($builder = m::mock('\Illuminate\Database\Eloquent\Builder'));
+		$builder->shouldReceive('join')->once()->with('tokens', 'users.id', '=', 'tokens.user_id')->andReturn($builder);
+		$builder->shouldReceive('where')->once()->with('tokens.id', '=', 'token')->andReturn($builder);
+		$builder->shouldReceive('where')->once()->with('expiration', '>', 'DateTime')->andReturn($builder);
+		$builder->shouldReceive('first')->once()->andReturn(m::mock('User'));
+		$result = $repo->getUserByToken('token');
+		$this->assertInstanceOf('User', $result);
+	}
+
+	public function testGetUserByTokenReturnsUserIfNotFoundOrTokenInvalid()
+	{
+		$mocks = $this->getMocks();
+		$repo = $this->getRepo($mocks);
+		$mocks['model']->shouldReceive('newQuery')->once()->andReturn($builder = m::mock('\Illuminate\Database\Eloquent\Builder'));
+		$builder->shouldReceive('join')->once()->with('tokens', 'users.id', '=', 'tokens.user_id')->andReturn($builder);
+		$builder->shouldReceive('where')->once()->with('tokens.id', '=', 'token')->andReturn($builder);
+		$builder->shouldReceive('where')->once()->with('expiration', '>', 'DateTime')->andReturn($builder);
+		$builder->shouldReceive('first')->once()->andReturn(null);
+		$result = $repo->getUserByToken('token');
+		$this->assertNull($result);
+	}
+
 	private function getMocks()
 	{
 		return array(
