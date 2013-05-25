@@ -57,12 +57,12 @@ class AuthController extends BaseController {
 
 		if(!($user = $this->userRepository->getUserByCredentials(Input::all())))
 		{
-			throw new AuthenticationException;
+			throw new AuthenticationException('Can\'t find user from credentials');
 		}
 
 		if(!$this->hasher->check(Input::get('password'), $user->password))
 		{
-			throw new AuthenticationException;
+			throw new AuthenticationException('Can\'t find user from credentials');
 		}
 
 		$token = $this->tokenFactory->createTokenForUser($user);
