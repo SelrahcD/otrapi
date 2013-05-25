@@ -49,7 +49,7 @@ class DatabaseUserRepository implements UserRepositoryInterface {
 	 */
 	public function getUserByToken($token)
 	{
-		return $this->model->newQuery()->join('tokens', 'users.id', '=', 'tokens.user_id')->where('tokens.id', '=', $token)->where('expiration', '>', new DateTime)->first();
+		return $this->model->newQuery()->join('tokens', 'users.id', '=', 'tokens.user_id')->where('tokens.id', '=', $token)->where('expiration', '>', new DateTime)->first(array('users.*'));
 	}
 
 	/**
