@@ -16,10 +16,9 @@ class UserTest extends TestCase {
 		$this->user = new User;
 	}
 
-	public function testPasswordIsHashed()
+	public function testPasswordIsHashedOnDb()
 	{
-		$this->user->password = 'password';
-		$this->assertNotEquals('password', $this->user->password);
-		$this->assertNotNull($this->user->password);
+		// IN ARDENT
 	}
+
 }

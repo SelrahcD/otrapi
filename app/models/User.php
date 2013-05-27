@@ -18,10 +18,36 @@ class User extends Ardent implements UserInterface {
 	 */
 	protected $visible = array('id', 'email', 'created_at', 'updated_at');
 
-	protected function setPasswordAttribute($password)
-	{
-		$this->attributes['password'] = Hash::make($password);
-	}
+	/**
+	 * The rules to be applied to the data.
+	 *
+	 * @var array
+	 */
+	public static $rules = array(
+		'password' => 'required|min:6',
+		'email' => 'required',
+		);
+
+	/**
+	 * List of attribute names which should be hashed using the Bcrypt hashing algorithm.
+	 *
+	 * @var array
+	 */
+	public static $passwordAttributes = array('password');
+
+	/**
+	 * If set to true, the model will automatically replace all plain-text passwords
+	 * attributes (listed in $passwordAttributes) with hash checksums
+	 *
+	 * @var bool
+	 */
+	public $autoHashPasswordAttributes = true;
+
+	// protected function setPasswordAttribute($password)
+	// {
+	// 	$this->attributes['password'] = $password;
+	// 	$this->attributes['password'] = Hash::make($password);
+	// }
 
 
 	/**
