@@ -131,9 +131,18 @@ class RestContext extends BehatContext
     {
        $data = json_decode((string) $this->response->getBody());
 
-       if(!$data || !property_exists($data, $name))
+       $names = explode('.', $name);
+
+       foreach($names as $name)
        {
-          throw new \Exception('Response doesn\'t contain ' . $name);
+          if(!property_exists($data, $name))
+          {
+            throw new \Exception('Response doesn\'t contain ' . $name);
+          }
+          else
+          {
+            $data = $data->{$name};
+          }
        }
     }
 
