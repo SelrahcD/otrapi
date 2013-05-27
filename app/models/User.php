@@ -2,7 +2,7 @@
 
 use Illuminate\Auth\UserInterface;
 
-class User extends Eloquent implements UserInterface {
+class User extends Ardent implements UserInterface {
 
 	/**
 	 * The attributes that are mass assignable.
@@ -23,10 +23,6 @@ class User extends Eloquent implements UserInterface {
 		$this->attributes['password'] = Hash::make($password);
 	}
 
-	public function validate()
-	{
-		return true;
-	}
 
 	/**
 	 * Get the unique identifier for the user.
