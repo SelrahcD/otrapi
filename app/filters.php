@@ -1,5 +1,7 @@
 <?php
 
+Route::filter('api.auth', 'ApiAuthFilter');
+
 /*
 |--------------------------------------------------------------------------
 | Application & Route Filters

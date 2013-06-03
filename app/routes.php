@@ -15,8 +15,6 @@ Route::get('/', function()
 	return View::make('hello');
 });
 
-Route::filter('api.auth', 'ApiAuthFilter');
-
 Route::post('/auth', 'AuthController@getToken');
 Route::post('/users', 'UsersController@create');
 
