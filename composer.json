@@ -2,7 +2,7 @@
 	"name": "ontheroad/api",
 	"description": "On the road API",
 	"require": {
-		"laravel/framework": "4.0.x-dev",
+		"laravel/framework": "4.0.x",
 		"laravelbook/ardent": "dev-master"
 	},
 	"require-dev": {
