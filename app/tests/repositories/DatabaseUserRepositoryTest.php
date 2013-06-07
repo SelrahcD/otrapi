@@ -15,10 +15,8 @@ class DatabaseUserRepositoryTest extends TestCase {
 		$repo = $this->getRepo($mocks);
 		$attributes = array('email' => 'c.desneuf@gmail.com');
 		$mocks['model']->shouldReceive('newInstance')->once()->with($attributes)->andReturn($user = m::mock('User'));
-		$result = $repo->make($attributes);
-		$user->shouldReceive('getAttribute')->once()->with('email')->andReturn('c.desneuf@gmail.com');		
+		$result = $repo->make($attributes);	
 		$this->assertInstanceOf('User', $result);
-		$this->assertEquals('c.desneuf@gmail.com', $result->email);
 	}
 
 	public function testStoreStoresUser()
