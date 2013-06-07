@@ -22,4 +22,5 @@ Route::group(array('before' => 'api.auth'), function()
 {
 	Route::get('/me', 'UsersController@showMe');
 	Route::put('/me', 'UsersController@editMe');
+	Route::post('/bands', 'BandsController@create');
 });
