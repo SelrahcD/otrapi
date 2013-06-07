@@ -4,6 +4,14 @@ use Mockery as m;
 
 class AuthControllerTest extends TestCase {
 
+	public function setUp()
+	{
+		parent::setUp();
+
+		$this->mocks = $this->getMocks();
+		$this->controller = $this->getController($this->mocks);
+	}
+
 	public function tearDown()
 	{
 		m::close();
@@ -11,15 +19,13 @@ class AuthControllerTest extends TestCase {
 
 	public function testAuthWithValidDataReturnsToken()
 	{
-		$mocks = $this->getMocks();
-		$controller = $this->getController($mocks);
 		Input::shouldReceive('all')->once()->andReturn(
 			$credentials = array(
 				'email'    => 'c.desneuf@gmail.com',
 				'password' => 'password',
 				)
 			);
-		$mocks['userRepo']->shouldReceive('getUserByCredentials')->once()->with($credentials)->andReturn($user = m::mock('User'));
+		$this->mocks['userRepo']->shouldReceive('getUserByCredentials')->once()->with($credentials)->andReturn($user = m::mock('User'));
 		$user->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
 	
 		Input::shouldReceive('input')->once()->with('password', "")->andReturn('password'
@@ -27,11 +33,11 @@ class AuthControllerTest extends TestCase {
 
 		$user->shouldReceive('getAttribute')->once()->with('password')->andReturn('hashedPassword');
 
-		$mocks['hasher']->shouldReceive('check')->with('password', 'hashedPassword')->andReturn(true);
+		$this->mocks['hasher']->shouldReceive('check')->with('password', 'hashedPassword')->andReturn(true);
 
-		$mocks['tokenRepo']->shouldReceive('store')->once();
+		$this->mocks['tokenRepo']->shouldReceive('store')->once();
 
-		$response = $controller->getToken();
+		$response = $this->controller->getToken();
 		$this->assertInstanceOf('Token', $response);
 	}
 
@@ -40,17 +46,15 @@ class AuthControllerTest extends TestCase {
 	 */
 	public function testAuthWithUnvalidUsernameThrowsAuthenticationException()
 	{
-		$mocks = $this->getMocks();
-		$controller = $this->getController($mocks);
 		Input::shouldReceive('all')->once()->andReturn(
 			$credentials = array(
 				'email'    => 'c.desneuf@gmail.com',
 				'password' => 'password',
 				)
 			);
-		$mocks['userRepo']->shouldReceive('getUserByCredentials')->once()->with($credentials)->andReturn(null);
+		$this->mocks['userRepo']->shouldReceive('getUserByCredentials')->once()->with($credentials)->andReturn(null);
 		
-		$controller->getToken();
+		$this->controller->getToken();
 	}
 
 	/**
@@ -58,33 +62,31 @@ class AuthControllerTest extends TestCase {
 	 */
 	public function testAuthWithUnvalidPasswordThrowsAuthenticationException()
 	{
-		$mocks = $this->getMocks();
-		$controller = $this->getController($mocks);
 		Input::shouldReceive('all')->once()->andReturn(
 			$credentials = array(
 				'email'    => 'c.desneuf@gmail.com',
 				'password' => 'wrongPassword',
 				)
 			);
-		$mocks['userRepo']->shouldReceive('getUserByCredentials')->once()->with($credentials)->andReturn($user = m::mock('User'));
+		$this->mocks['userRepo']->shouldReceive('getUserByCredentials')->once()->with($credentials)->andReturn($user = m::mock('User'));
 
 		Input::shouldReceive('input')->once()->with('password', "")->andReturn('password'
 			);
 
 		$user->shouldReceive('getAttribute')->once()->with('password')->andReturn('hashedPassword');
 
-		$mocks['hasher']->shouldReceive('check')->with('password', 'hashedPassword')->andReturn(false);
+		$this->mocks['hasher']->shouldReceive('check')->with('password', 'hashedPassword')->andReturn(false);
 		
-		$controller->getToken();
+		$this->controller->getToken();
 	}
 
 	private function getMocks()
 	{
 		return array(
-			'tokenFactory' => Mockery::mock(new TokenFactory(1)),
-			'userRepo'     => Mockery::mock('UserRepositoryInterface'),
-			'tokenRepo'    => Mockery::mock('TokenRepositoryInterface'),
-			'hasher'	   => Mockery::mock('Illuminate\Hashing\HasherInterface'),
+			'tokenFactory' => m::mock(new TokenFactory(1)),
+			'userRepo'     => m::mock('UserRepositoryInterface'),
+			'tokenRepo'    => m::mock('TokenRepositoryInterface'),
+			'hasher'	   => m::mock('Illuminate\Hashing\HasherInterface'),
 			);
 	}
 

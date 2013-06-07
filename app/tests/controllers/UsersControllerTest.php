@@ -11,6 +11,8 @@ class UsersControllerTest extends TestCase {
 
 	public function setUp()
 	{
+		parent::setUp();
+
 		$this->mocks = $this->getMocks();
 		$this->controller = $this->getController($this->mocks);
 	}
