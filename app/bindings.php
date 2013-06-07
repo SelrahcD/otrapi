@@ -10,4 +10,9 @@ App::bind('UserRepositoryInterface', function()
 		return new DatabaseUserRepository(new User);
 	});
 
+App::bind('BandRepositoryInterface', function()
+	{
+		return new DatabaseBandRepository(new Band);
+	});
+
 App::instance('Illuminate\Hashing\HasherInterface', App::make('hash'));
