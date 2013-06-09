@@ -27,19 +27,19 @@ class RestContext extends BehatContext
      */
     public function __construct(array $parameters)
     {
-        $this->restObject = new stdClass();
-        $this->client     = new Guzzle\Service\Client();
-        $eventDispatcher = $this->client->getEventDispatcher();
-        $eventDispatcher->addListener('request.error', function($event)
+      $this->restObject = new stdClass();
+      $this->client     = new Guzzle\Service\Client();
+      $eventDispatcher = $this->client->getEventDispatcher();
+      $eventDispatcher->addListener('request.error', function($event)
+        {
+          if(!in_array($event['response']->getStatusCode(), array(500)))
           {
-            if(!in_array($event['response']->getStatusCode(), array(500)))
-            {
-              $event->stopPropagation();
-            }
-          }, 0);
-        
-        $this->client->setEventDispatcher($eventDispatcher);
-        $this->parameters = $parameters;
+            $event->stopPropagation();
+          }
+        }, 0);
+      
+      $this->client->setEventDispatcher($eventDispatcher);
+      $this->parameters = $parameters;
     }
 
     public function getParameter($name)
@@ -60,7 +60,7 @@ class RestContext extends BehatContext
      */
     public function thatParameterIs($name, $value)
     {
-        $this->restObject->$name = $value;
+      $this->restObject->$name = $value;
     }
 
     /**
@@ -68,39 +68,39 @@ class RestContext extends BehatContext
      */
     public function iMakeARequestOn($method, $pageUrl)
     {
-        $baseUrl          = $this->getParameter('base_url');
-        $this->requestUrl = $baseUrl.$this->transformURL($pageUrl);
+      $baseUrl          = $this->getParameter('base_url');
+      $this->requestUrl = $baseUrl.$this->transformURL($pageUrl);
 
-        switch (strtoupper($method))
-        {
-            case 'GET':
-                $request = $this->client->get($this->requestUrl.'?'.http_build_str((array)$this->restObject));
-                break;
+      switch (strtoupper($method))
+      {
+        case 'GET':
+          $request = $this->client->get($this->requestUrl.'?'.http_build_str((array)$this->restObject));
+          break;
 
-            case 'POST':
-                $postFields = (array)$this->restObject;
-                $request = $this->client->post($this->requestUrl,null,$postFields);
-                break;
+        case 'POST':
+          $postFields = (array)$this->restObject;
+          $request = $this->client->post($this->requestUrl,null,$postFields);
+          break;
 
-            case 'PUT':
-                $request = $this->client->put($this->requestUrl,null,null);
-                foreach((array)$this->restObject as $key => $value)
-                {
-                  $request->getQuery()->set($key, $value);
-                }
-                break;
+        case 'PUT':
+          $request = $this->client->put($this->requestUrl,null,null);
+          foreach((array)$this->restObject as $key => $value)
+          {
+            $request->getQuery()->set($key, $value);
+          }
+          break;
 
-            case 'DELETE':
-                $request = $this->client->delete($this->requestUrl.'?'.http_build_str((array)$this->restObject));
-                  break;
-        }
+        case 'DELETE':
+          $request = $this->client->delete($this->requestUrl.'?'.http_build_str((array)$this->restObject));
+            break;
+      }
 
-        if($this->token)
-        {
-            $request->setAuth($this->token, 'x');
-        }
+      if($this->token)
+      {
+        $request->setAuth($this->token, 'x');
+      }
 
-        $this->response = $request->send();
+      $this->response = $request->send();
     }
 
 
@@ -109,10 +109,10 @@ class RestContext extends BehatContext
      */
     public function theResponseIsJson()
     {
-        if ($this->response->getContentType() !== 'application/json')
-        {
-            throw new Exception("Response was not JSON\n" . $this->response);
-        }
+      if ($this->response->getContentType() !== 'application/json')
+      {
+        throw new Exception("Response was not JSON\n" . $this->response);
+      }
     }
 
     /**
@@ -120,10 +120,10 @@ class RestContext extends BehatContext
      */
     public function theResponseStatusCodeIs($httpStatus)
     {
-        if ((string)$this->response->getStatusCode() !== $httpStatus)
-        {
-           throw new \Exception('HTTP code does not match '.$httpStatus.' (actual: '.$this->response->getStatusCode().')');
-        }
+      if ((string)$this->response->getStatusCode() !== $httpStatus)
+      {
+        throw new \Exception('HTTP code does not match '.$httpStatus.' (actual: '.$this->response->getStatusCode().')');
+      }
     }
 
     /**
@@ -131,23 +131,23 @@ class RestContext extends BehatContext
      */
     public function theResponseContains($name)
     {
-       $data = json_decode((string) $this->response->getBody());
+      $data = json_decode((string) $this->response->getBody());
 
-       $names = explode('.', $name);
+      $names = explode('.', $name);
 
-       foreach($names as $name)
-       {
-          if(!property_exists($data, $name))
-          {
-            throw new \Exception('Response doesn\'t contain ' . $name);
-          }
-          else
-          {
-            $data = $data->{$name};
-          }
-       }
+      foreach($names as $name)
+      {
+        if(!property_exists($data, $name))
+        {
+          throw new \Exception('Response doesn\'t contain ' . $name);
+        }
+        else
+        {
+          $data = $data->{$name};
+        }
+      }
 
-       $this->store($name, $data);
+      $this->store($name, $data);
     }
 
     /**
@@ -155,12 +155,12 @@ class RestContext extends BehatContext
      */
     public function theResponseShouldContainsAndValue($name, $value)
     {
-       $data = json_decode((string) $this->response->getBody());
+      $data = json_decode((string) $this->response->getBody());
 
-       if($data->{$name} != $value)
-       {
-          throw new \Exception('Value doesn\'t not match expected value. Received : ' . $data->{$name} . ' Expected : ' . $value);
-       }
+      if($data->{$name} != $value)
+      {
+        throw new \Exception('Value doesn\'t not match expected value. Received : ' . $data->{$name} . ' Expected : ' . $value);
+      }
     }
 
     /**
@@ -168,12 +168,12 @@ class RestContext extends BehatContext
      */
     public function theResponseDoesntContain($name)
     {
-        $data = json_decode((string) $this->response->getBody());
+      $data = json_decode((string) $this->response->getBody());
 
-        if(property_exists($data, $name))
-        {
-          throw new \Exception('Response contains ' . $name . ' and should not');
-        }
+      if(property_exists($data, $name))
+      {
+        throw new \Exception('Response contains ' . $name . ' and should not');
+      }
     }
 
      /**
@@ -181,18 +181,17 @@ class RestContext extends BehatContext
      */
     public function thatIMConnectedAsUser($user)
     {
-        if(array_key_exists($user, static::$userTokens))
-        {
-            $token = static::$userTokens[$user];
-        }
-        else
-        {
-            $token = $this->getToken($user);
-            static::$userTokens[$user] = $token;
-        }
+      if(array_key_exists($user, static::$userTokens))
+      {
+        $token = static::$userTokens[$user];
+      }
+      else
+      {
+        $token = $this->getToken($user);
+        static::$userTokens[$user] = $token;
+      }
 
-        $this->token = $token;
-
+      $this->token = $token;
     }
 
     protected function getToken($user)
@@ -200,7 +199,7 @@ class RestContext extends BehatContext
         $users = $this->getParameter('users');
         if(!array_key_exists($user, $users))
         {
-            throw \Exception('Unknown user ' . $user . '. Can\'t login. Please insert data in behat.yml');
+          throw \Exception('Unknown user ' . $user . '. Can\'t login. Please insert data in behat.yml');
         }
 
         $baseUrl = $this->getParameter('base_url');
@@ -227,23 +226,23 @@ class RestContext extends BehatContext
         
       $res = '';
       $max = sizeof($segments);
-     for($i = 0; $i < $max; $i++)
-     {
-
-      if(Str::is('{*}', $segments[$i]))
+      for($i = 0; $i < $max; $i++)
       {
-        $key = substr(substr($segments[$i], 1), 0, -1);
-        $segments[$i] = $this->get($key);
-      }
 
-      $res .= $segments[$i];
-      
-      if($i < ($max - 1))
-      {
-        $res .= '/';
-      }
+        if(Str::is('{*}', $segments[$i]))
+        {
+          $key = substr(substr($segments[$i], 1), 0, -1);
+          $segments[$i] = $this->get($key);
+        }
 
-     }
+        $res .= $segments[$i];
+        
+        if($i < ($max - 1))
+        {
+          $res .= '/';
+        }
+
+      }
 
       return $res;
     }
