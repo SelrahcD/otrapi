@@ -1,6 +1,7 @@
 <?php
-use Behat\Behat\Context\BehatContext;
-use Symfony\Component\Yaml\Yaml;
+use Behat\Behat\Context\BehatContext,
+    Symfony\Component\Yaml\Yaml,
+    Illuminate\Support\Str;
 
 /**
  * Rest context.
@@ -18,6 +19,7 @@ class RestContext extends BehatContext
     private $parameters = array();
 
     protected static $userTokens = array();
+    protected $storage = array();
 
     /**
      * Initializes context.
@@ -67,7 +69,7 @@ class RestContext extends BehatContext
     public function iMakeARequestOn($method, $pageUrl)
     {
         $baseUrl          = $this->getParameter('base_url');
-        $this->requestUrl = $baseUrl.$pageUrl;
+        $this->requestUrl = $baseUrl.$this->transformURL($pageUrl);
 
         switch (strtoupper($method))
         {
@@ -144,6 +146,8 @@ class RestContext extends BehatContext
             $data = $data->{$name};
           }
        }
+
+       $this->store($name, $data);
     }
 
     /**
@@ -215,6 +219,48 @@ class RestContext extends BehatContext
         }
 
         return $data->token;
+    }
+
+    protected function transformURL($value)
+    {
+      $segments = explode('/', $value);
+        
+      $res = '';
+      $max = sizeof($segments);
+     for($i = 0; $i < $max; $i++)
+     {
+
+      if(Str::is('{*}', $segments[$i]))
+      {
+        $key = substr(substr($segments[$i], 1), 0, -1);
+        $segments[$i] = $this->get($key);
+      }
+
+      $res .= $segments[$i];
+      
+      if($i < ($max - 1))
+      {
+        $res .= '/';
+      }
+
+     }
+
+      return $res;
+    }
+
+    protected function store($key, $value)
+    {
+      $this->storage[$key] = $value;
+    }
+
+    protected function get($key)
+    {
+      if(!array_key_exists($key, $this->storage))
+      {
+        throw new \Exception('Trying to get an unexistant value');
+      }
+
+      return $this->storage[$key];
     }
 
 
