@@ -114,9 +114,9 @@ class RestContext extends BehatContext
     }
 
     /**
-     * @Then /^the response status code should be (\d+)$/
+     * @Then /^the response status code is (\d+)$/
      */
-    public function theResponseStatusCodeShouldBe($httpStatus)
+    public function theResponseStatusCodeIs($httpStatus)
     {
         if ((string)$this->response->getStatusCode() !== $httpStatus)
         {
@@ -125,9 +125,9 @@ class RestContext extends BehatContext
     }
 
     /**
-     * @Then /^the response should contain ([^"]*)$/
+     * @Then /^the response contains ([^"]*)$/
      */
-    public function theResponseShouldContain($name)
+    public function theResponseContains($name)
     {
        $data = json_decode((string) $this->response->getBody());
 
@@ -147,9 +147,9 @@ class RestContext extends BehatContext
     }
 
     /**
-     * @Then /^the response should contain ([^"]*) and is "([^"]*)"$/
+     * @Then /^the response contains ([^"]*) and is "([^"]*)"$/
      */
-    public function theResponseShouldContainAndValue($name, $value)
+    public function theResponseShouldContainsAndValue($name, $value)
     {
        $data = json_decode((string) $this->response->getBody());
 
@@ -160,9 +160,9 @@ class RestContext extends BehatContext
     }
 
     /**
-     * @Then /^the response should not contain ([^"]*)$/
+     * @Then /^the response doesn't contain ([^"]*)$/
      */
-    public function theResponseShouldNotContain($name)
+    public function theResponseDoesntContain($name)
     {
         $data = json_decode((string) $this->response->getBody());
 
