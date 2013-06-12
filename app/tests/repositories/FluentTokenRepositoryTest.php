@@ -4,6 +4,12 @@ use Mockery as m;
 
 class FluentTokenRepositoryTest extends TestCase {
 
+	public function setUp()
+	{
+		$this->mocks = $this->getMocks();
+		$this->repo = $this->getRepo($this->mocks);
+	}
+
 	public function tearDown()
 	{
 		m::close();
@@ -11,8 +17,6 @@ class FluentTokenRepositoryTest extends TestCase {
 
 	public function testStoreStoresToken()
 	{
-		$mocks = $this->getMocks();
-		$repo = $this->getRepo($mocks);
 		$user = m::mock('User');
 		$token = m::mock('Token');
 		$token->shouldReceive('getId')->once()->andReturn('tokenId');
@@ -25,28 +29,36 @@ class FluentTokenRepositoryTest extends TestCase {
 			'expiration' => 12345,
 			);
 
-		$mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($mocks['db']);
-		$mocks['db']->shouldReceive('insert')->once()->with($attributes);
-		$repo->store($token);
+		$this->mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('insert')->once()->with($attributes);
+		$this->repo->store($token);
 	}
 
 	public function testDeleteExpiredDeleteAllExpiredTokens()
 	{
-		$mocks = $this->getMocks();
-		$repo = $this->getRepo($mocks);
-		$mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($mocks['db']);
-		$mocks['db']->shouldReceive('where')->once()->with('expiration', '<', 'DateTime')->andReturn($mocks['db']);
-		$mocks['db']->shouldReceive('delete')->once();
-		$repo->deleteExpired();
+		$this->mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('where')->once()->with('expiration', '<', 'DateTime')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('delete')->once();
+		$this->repo->deleteExpired();
 	}
 
 	public function testDeleteAllDeleteAllTokens()
 	{
-		$mocks = $this->getMocks();
-		$repo = $this->getRepo($mocks);
-		$mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($mocks['db']);
-		$mocks['db']->shouldReceive('truncate')->once();
-		$repo->deleteAll();
+		$this->mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('truncate')->once();
+		$this->repo->deleteAll();
+	}
+
+	public function testGetForUserReturnsTokenIfExists()
+	{
+		$this->mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('where')->once()->with('user_id', '=', 1)->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('where')->once()->with('expiration', '>', 'DateTime')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('first')->once()->andReturn(m::mock('Token'));
+		$user = m::mock('User');
+		$user->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
+		$result = $this->repo->getForUser($user);
+		$this->assertInstanceOf('Token', $result);
 	}
 
 	private function getMocks()

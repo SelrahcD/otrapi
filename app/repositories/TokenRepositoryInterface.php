@@ -7,4 +7,6 @@ interface TokenRepositoryInterface {
 	public function deleteExpired();
 
 	public function deleteAll();
+
+	public function getForUser(User $user);
 }

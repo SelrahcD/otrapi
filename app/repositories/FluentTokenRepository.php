@@ -34,6 +34,13 @@ class FluentTokenRepository implements TokenRepositoryInterface {
 		$this->newQuery()->truncate();
 	}
 
+	public function getForUser(User $user)
+	{
+		$data = $this->newQuery()->where('user_id', '=', $user->id)->where('expiration', '>', new DateTime)->first();
+
+		return $data ? new Token(get_object_vars($data)) : null;
+	}
+
 	protected function newQuery()
 	{
 		return $this->db->table($this->tableName);
