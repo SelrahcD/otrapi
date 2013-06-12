@@ -6,6 +6,9 @@ Scenario: I can get a token if I provide valid authentication data
 	When I make a POST request on "/auth"
 	Then the response is JSON
 	Then the response status code is 200
+	Then the response contains expiration
+	Then the response contains token
+	Then the response contains refresh_token
 
 Scenario: I cant get a token if I provide unvalid email
 	Given that email is "c.desneuf@test.com"
