@@ -76,8 +76,21 @@ class Token implements JsonableInterface {
 	 * 
 	 * @return int
 	 */
-	public function getExpiration()
+	public function getExpiration($asDateTime = false)
 	{
+		if($asDateTime && !$this->expiration instanceof \DateTime)
+		{
+			return new \DateTime($this->expiration);
+		}
+		elseif($asDateTime && $this->expiration instanceof \DateTime)
+		{
+			return $this->expiration;
+		}
+		elseif(!$asDateTime && $this->expiration instanceof \DateTime)
+		{
+			return $this->expiration->format("Y-m-d H:i:s");
+		}
+		
 		return $this->expiration;
 	}
 
@@ -119,9 +132,9 @@ class Token implements JsonableInterface {
 	public function toArray()
 	{
 		return array(
-			'token'         => $this->id,
-			'expiration'    => $this->expiration,
-			'refresh_token' => $this->refresh,
+			'token'         => $this->getId(),
+			'expiration'    => $this->getExpiration(),
+			'refresh_token' => $this->getRefresh(),
 			);
 	}
 

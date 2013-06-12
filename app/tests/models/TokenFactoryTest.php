@@ -26,6 +26,6 @@ class TokenFactoryTest extends TestCase {
 		$this->assertNotNull($token->getId());
 		$this->assertNotNull($token->getRefresh());
 		$this->assertNotNull($token->getExpiration());
-		$this->assertInstanceOf('DateTime', $token->getExpiration());
+		$this->assertInstanceOf('DateTime', $token->getExpiration(true));
 	}
 }
