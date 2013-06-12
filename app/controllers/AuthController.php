@@ -65,9 +65,13 @@ class AuthController extends BaseController {
 			throw new AuthenticationException('Can\'t find user from credentials');
 		}
 
-		$token = $this->tokenFactory->createTokenForUser($user);
-		
-		$this->tokenRepository->store($token);
+		// If we can't find a valid token for user create a new one
+		if(!($token = $this->tokenRepository->getForUser($user)))
+		{
+			$token = $this->tokenFactory->createTokenForUser($user);
+			
+			$this->tokenRepository->store($token);
+		}
 
 		return $token;
 	}
