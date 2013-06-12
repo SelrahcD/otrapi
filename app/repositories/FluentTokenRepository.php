@@ -17,6 +17,7 @@ class FluentTokenRepository implements TokenRepositoryInterface {
 	{
 		$tokenArray = array(
 			'id'         => $token->getId(),
+			'refresh'	 => $token->getRefresh(),
 			'user_id'    => $token->getUserId(),
 			'expiration' => $token->getExpiration(),
 			);
