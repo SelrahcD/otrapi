@@ -45,6 +45,7 @@ class TokenFactory {
 	{
 		$this->setId($token);
 		$this->setExpiration($token);
+		$this->setRefresh($token);
 	}
 
 	/**
@@ -55,6 +56,17 @@ class TokenFactory {
 	protected function setId(Token $token)
 	{
 		$attributes = array('id' => Str::random(20));
+		$token->fill($attributes);
+	}
+
+	/**
+	 * Set refresh to token
+	 * 
+	 * @param Token $token
+	 */
+	protected function setRefresh(Token $token)
+	{
+		$attributes = array('refresh' => Str::random(20));
 		$token->fill($attributes);
 	}
 

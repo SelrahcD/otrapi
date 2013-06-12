@@ -12,6 +12,13 @@ class Token implements JsonableInterface {
 	protected $id;
 
 	/**
+	 * Refresh token
+	 * 
+	 * @var string
+	 */
+	protected $refresh;
+
+	/**
 	 * User id
 	 * 
 	 * @var int
@@ -43,7 +50,7 @@ class Token implements JsonableInterface {
 	 */
 	public function fill(array $attributes = array())
 	{
-		$attributesList = array('id', 'user_id', 'expiration');
+		$attributesList = array('id', 'refresh', 'user_id', 'expiration');
 
 		foreach($attributesList as $attributeName)
 		{
@@ -85,6 +92,16 @@ class Token implements JsonableInterface {
 	}
 
 	/**
+	 * Get refresh token
+	 * 
+	 * @return string
+	 */
+	public function getRefresh()
+	{
+		return $this->refresh;
+	}
+
+	/**
 	 * Indicate if the token is valid
 	 * 
 	 * @return boolean
@@ -102,8 +119,9 @@ class Token implements JsonableInterface {
 	public function toArray()
 	{
 		return array(
-			'token'      => $this->id,
-			'expiration' => $this->expiration
+			'token'         => $this->id,
+			'expiration'    => $this->expiration,
+			'refresh_token' => $this->refresh,
 			);
 	}
 

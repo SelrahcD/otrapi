@@ -15,6 +15,7 @@ class CreateTokensTable extends Migration {
 		Schema::create('tokens', function($t)
 		{
 			$t->string('id');
+			$t->string('refresh');
 			$t->integer('user_id');
 			$t->timestamp('expiration');
 		});
