@@ -63,7 +63,19 @@ class DatabaseUserRepositoryTest extends TestCase {
 		$this->assertInstanceOf('User', $result);
 	}
 
-	public function testGetUserByTokenReturnsUserIfNotFoundOrTokenInvalid()
+	public function testGetUserByTokenWithExpiredFalseReturnsUserIfFound()
+	{
+		$mocks = $this->getMocks();
+		$repo = $this->getRepo($mocks);
+		$mocks['model']->shouldReceive('newQuery')->once()->andReturn($builder = m::mock('\Illuminate\Database\Eloquent\Builder'));
+		$builder->shouldReceive('join')->once()->with('tokens', 'users.id', '=', 'tokens.user_id')->andReturn($builder);
+		$builder->shouldReceive('where')->once()->with('tokens.id', '=', 'token')->andReturn($builder);
+		$builder->shouldReceive('first')->once()->andReturn(m::mock('User'));
+		$result = $repo->getUserByToken('token', false);
+		$this->assertInstanceOf('User', $result);
+	}
+
+	public function testGetUserByTokenReturnsNullIfNotFoundOrTokenInvalid()
 	{
 		$mocks = $this->getMocks();
 		$repo = $this->getRepo($mocks);

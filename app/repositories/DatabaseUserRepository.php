@@ -45,11 +45,19 @@ class DatabaseUserRepository implements UserRepositoryInterface {
 	 * Get a user using a token
 	 * 
 	 * @param  string $token 
+	 * @param  boolean $expired
 	 * @return User | null
 	 */
-	public function getUserByToken($token)
+	public function getUserByToken($token, $expired = true)
 	{
-		return $this->model->newQuery()->join('tokens', 'users.id', '=', 'tokens.user_id')->where('tokens.id', '=', $token)->where('expiration', '>', new DateTime)->first(array('users.*'));
+		$requete = $this->model->newQuery()->join('tokens', 'users.id', '=', 'tokens.user_id')->where('tokens.id', '=', $token);
+
+		if($expired)
+		{
+			$requete->where('expiration', '>', new DateTime);
+		}
+
+		return $requete->first(array('users.*'));
 	}
 
 	/**
