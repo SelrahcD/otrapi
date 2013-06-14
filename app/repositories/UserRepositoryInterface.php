@@ -6,7 +6,7 @@ interface UserRepositoryInterface {
 
 	public function getUserByCredentials(array $credentials);
 
-	public function getUserByToken($token);
+	public function getUserByToken($token, $expired = true);
 
 	public function store(User $user);
 	
