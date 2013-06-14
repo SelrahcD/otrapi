@@ -75,4 +75,41 @@ class AuthController extends BaseController {
 
 		return $token;
 	}
+
+	/**
+	 * Create a new token for user
+	 * 
+	 * @return Token
+	 */
+	public function refreshToken()
+	{
+		if(!($tokenId = Request::getUser()))
+		{
+			throw new AuthenticationException;
+		}
+
+		if(!($user = $this->userRepository->getUserByToken($tokenId, false)))
+		{
+			throw new AuthenticationException;
+		}
+
+		if(!$token = $this->tokenRepository->getForUser($user, false))
+		{
+			throw new AuthenticationException;
+		}
+
+		if(Input::get('refresh_token') !== $token->getRefresh())
+		{
+			throw new ErrorMessageException('Unvalid refresh token');
+		}
+
+		// Delete old token
+		$this->tokenRepository->delete($token);
+
+		// Create new token and store it
+		$token = $this->tokenFactory->createTokenForUser($user);
+		$this->tokenRepository->store($token);
+
+		return $token;
+	}
 }

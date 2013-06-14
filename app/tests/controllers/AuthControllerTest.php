@@ -105,6 +105,22 @@ class AuthControllerTest extends TestCase {
 		$this->controller->getToken();
 	}
 
+	/**
+	 * @expectedException AuthenticationException
+	 */
+	public function testRefreshTokenThrowsAuthExceptionIfNotTokenProvided()
+	{
+		Request::shouldReceive('getUser')->once()->andReturn(null);
+		$this->controller->refreshToken();
+	}
+
+	public function testRefreshTokenThrowsAuthExceptionIfCantGetUser()
+	{
+		// Request::shouldReceive('getUser')->once()->andReturn('tokenId');
+		// $this->mocks['userRepo']->shouldReceive('getUserByToken')->once()->with('tokenId', false)->andReturn(null);
+		// $this->controller->refreshToken();
+	}
+
 	private function getMocks()
 	{
 		return array(
