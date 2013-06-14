@@ -20,11 +20,13 @@ class FluentTokenRepositoryTest extends TestCase {
 		$user = m::mock('User');
 		$token = m::mock('Token');
 		$token->shouldReceive('getId')->once()->andReturn('tokenId');
+		$token->shouldReceive('getRefresh')->once()->andReturn('refreshToken');
 		$token->shouldReceive('getUserId')->once()->andReturn(1);
 		$token->shouldReceive('getExpiration')->once()->andReturn(12345);
 
 		$attributes = array(
 			'id'         => 'tokenId',
+			'refresh'	 => 'refreshToken',
 			'user_id'    => 1,
 			'expiration' => 12345,
 			);
@@ -32,6 +34,16 @@ class FluentTokenRepositoryTest extends TestCase {
 		$this->mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($this->mocks['db']);
 		$this->mocks['db']->shouldReceive('insert')->once()->with($attributes);
 		$this->repo->store($token);
+	}
+
+	public function testDeleteDeletesToken()
+	{
+		$token = m::mock('Token');
+		$token->shouldReceive('getId')->once()->andReturn('tokenId');
+		$this->mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('where')->once()->with('id', '=', 'tokenId')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('delete')->once();
+		$this->repo->delete($token);
 	}
 
 	public function testDeleteExpiredDeleteAllExpiredTokens()
@@ -49,7 +61,7 @@ class FluentTokenRepositoryTest extends TestCase {
 		$this->repo->deleteAll();
 	}
 
-	public function testGetForUserReturnsTokenIfExists()
+	public function testGetForUserReturnsTokenIfExistsAndValid()
 	{
 		$this->mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($this->mocks['db']);
 		$this->mocks['db']->shouldReceive('where')->once()->with('user_id', '=', 1)->andReturn($this->mocks['db']);
@@ -60,6 +72,18 @@ class FluentTokenRepositoryTest extends TestCase {
 		$result = $this->repo->getForUser($user);
 		$this->assertInstanceOf('Token', $result);
 	}
+
+	public function testGetForUserWithExpiredFalseReturnsTokenIfExists()
+	{
+		$this->mocks['db']->shouldReceive('table')->once()->with('tokens')->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('where')->once()->with('user_id', '=', 1)->andReturn($this->mocks['db']);
+		$this->mocks['db']->shouldReceive('first')->once()->andReturn(m::mock('Token'));
+		$user = m::mock('User');
+		$user->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
+		$result = $this->repo->getForUser($user, false);
+		$this->assertInstanceOf('Token', $result);
+	}
+
 
 	private function getMocks()
 	{
