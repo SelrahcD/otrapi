@@ -16,6 +16,7 @@ Route::get('/', function()
 });
 
 Route::post('/auth', 'AuthController@getToken');
+Route::post('/auth/refresh', 'AuthController@refreshToken');
 Route::post('/users', 'UsersController@create');
 
 Route::group(array('before' => 'api.auth'), function()
