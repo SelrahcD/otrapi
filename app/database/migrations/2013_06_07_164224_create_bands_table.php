@@ -18,6 +18,14 @@ class CreateBandsTable extends Migration {
 			$t->string('name');
 			$t->timestamps();
 		});
+
+
+		// Create pivot table
+		Schema::create('bands_users', function($t)
+		{
+			$t->integer('band_id');
+			$t->integer('user_id');
+		});
 	}
 
 	/**
@@ -27,7 +35,9 @@ class CreateBandsTable extends Migration {
 	 */
 	public function down()
 	{
-		//
+		// Drop tables
+		Schema::drop('bands');
+		Schema::drop('bands_users');
 	}
 
 }
