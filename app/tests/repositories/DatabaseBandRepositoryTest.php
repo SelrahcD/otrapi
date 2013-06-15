@@ -11,8 +11,6 @@ class DatabaseBandRepositoryTest extends TestCase {
 
 	public function setUp()
 	{
-		parent::setUp();
-
 		$this->mocks = $this->getMocks();
 		$this->repo = $this->getRepo($this->mocks);
 	}
@@ -31,13 +29,6 @@ class DatabaseBandRepositoryTest extends TestCase {
 		$band->shouldReceive('save')->once();
 		$this->repo->store($band);
 	}
-
-	// public function testGetReturnsABand()
-	// {
-	// 	$this->mocks['model']->shouldReceive('find')->once()->with('id')->andReturn(m::mock('Band'));
-	// 	$result = $this->repo->get(1);
-	// 	$this->assertInstanceOf('Band', $result);
-	// }
 
 	private function getMocks()
 	{
