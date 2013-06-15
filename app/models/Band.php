@@ -15,6 +15,17 @@ class Band extends Ardent {
 	 * @var arrays
 	 */
 	protected $visible = array('id', 'name', 'created_at', 'updated_at');
+
+
+	/**
+	 * Get bands members
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function users()
+	{
+		return $this->belongsToMany('User');
+	}
 	
 	
 }

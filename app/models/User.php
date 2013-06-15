@@ -70,4 +70,16 @@ class User extends Ardent implements UserInterface {
 	{
 		return $this->password;
 	}
+
+	/**
+	 * Get user's bands
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function bands()
+	{
+		return $this->belongsToMany('Band');
+	}
+	
+
 }
