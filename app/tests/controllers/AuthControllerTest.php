@@ -1,13 +1,13 @@
 <?php
  
-use Mockery as m;
+use Mockery as m,
+	Illuminate\Support\Facades\Input;
 
 class AuthControllerTest extends TestCase {
 
 	public function setUp()
 	{
 		parent::setUp();
-
 		$this->mocks = $this->getMocks();
 		$this->controller = $this->getController($this->mocks);
 	}
@@ -114,11 +114,61 @@ class AuthControllerTest extends TestCase {
 		$this->controller->refreshToken();
 	}
 
+	/**
+	 * @expectedException AuthenticationException
+	 */
 	public function testRefreshTokenThrowsAuthExceptionIfCantGetUser()
 	{
-		// Request::shouldReceive('getUser')->once()->andReturn('tokenId');
-		// $this->mocks['userRepo']->shouldReceive('getUserByToken')->once()->with('tokenId', false)->andReturn(null);
-		// $this->controller->refreshToken();
+		Request::shouldReceive('getUser')->once()->andReturn('tokenId');
+		$this->mocks['userRepo']->shouldReceive('getUserByToken')->once()->with('tokenId', false)->andReturn(null);
+		$this->controller->refreshToken();
+	}
+
+	/**
+	 * @expectedException AuthenticationException
+	 */
+	public function testRefreshTokenThrowsAuthExceptionIfCantGetToken()
+	{
+		Request::shouldReceive('getUser')->once()->andReturn('tokenId');
+		$this->mocks['userRepo']->shouldReceive('getUserByToken')->once()->with('tokenId', false)->andReturn($user = m::mock('User'));
+		$this->mocks['tokenRepo']->shouldReceive('getForUser')->once()->with($user, false)->andReturn(null);
+		$this->controller->refreshToken();
+	}
+
+	/**
+	 * @expectedException ErrorMessageException
+	 */
+	public function testRefreshTokenThrowsErrorMessageExceptionIfRefreshTokenDoesntMatch()
+	{
+		Request::shouldReceive('getUser')->once()->andReturn('tokenId');
+		$this->mocks['userRepo']->shouldReceive('getUserByToken')->once()->with('tokenId', false)->andReturn($user = m::mock('User'));
+		$this->mocks['tokenRepo']->shouldReceive('getForUser')->once()->with($user, false)->andReturn($token = m::mock('Token'));
+		Input::shouldReceive('input')->once()->with('refresh_token', '')->andReturn('refresh');
+		$token->shouldReceive('getRefresh')->once()->andReturn('NotTheSame');
+		$this->controller->refreshToken();
+	}
+
+	public function testRefreshTokenDeletesOldTokenCreatesNewOneStoresItAndReturnsIt()
+	{
+		Request::shouldReceive('getUser')->once()->andReturn('tokenId');
+		$this->mocks['userRepo']->shouldReceive('getUserByToken')->once()->with('tokenId', false)->andReturn($user = m::mock('User'));
+
+		$this->mocks['tokenRepo']->shouldReceive('getForUser')->once()->with($user, false)->andReturn($token = m::mock('Token'));
+
+		Input::shouldReceive('input')->once()->with('refresh_token', '')->andReturn('refresh');
+
+		$token->shouldReceive('getRefresh')->once()->andReturn('refresh');
+
+		$this->mocks['tokenRepo']->shouldReceive('delete')->once()->with($token);
+
+		$this->mocks['tokenFactory']->shouldReceive('createTokenForUser')->once()->with($user)->andReturn($newToken = m::mock('Token'));
+
+		$this->mocks['tokenRepo']->shouldReceive('store')->once()->with($newToken);
+
+		$response = $this->controller->refreshToken();
+
+		$this->assertInstanceOf('Token', $response);
+		$this->assertEquals($response, $newToken);
 	}
 
 	private function getMocks()
