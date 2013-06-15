@@ -39,6 +39,15 @@ class BandsControllerTest extends TestCase {
 		$this->controller->create();
 	}
 
+	/**
+	 * @expectedException NotFoundException
+	 */
+	public function testShowMembersThrowsNotFoundExceptionIfBandIsNotFound()
+	{
+		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn(null);
+		$this->controller->showMembers(1);
+	}
+
 	protected function getMocks()
 	{
 		return array(
