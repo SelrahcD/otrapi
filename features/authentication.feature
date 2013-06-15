@@ -1,5 +1,20 @@
 Feature: Authentication
 
+Scenario: A command can delete expired sessions from database
+	Given that I'm in the root directory
+	When I run artisan's task token:clean
+	Then I should get:
+	"""
+	All expired tokens were deleted.
+	"""
+
+Scenario: A command can delete all tokens
+	Given that I'm in the root directory
+	When I run artisan's task token:delete
+	Then I should get:
+	"""
+	All tokens were deleted.
+	"""
 Scenario: I can get a token if I provide valid authentication data
 	Given that email is "c.desneuf@gmail.com"
 	Given that password is "password"
@@ -41,21 +56,4 @@ Scenario: I can refresh my token
 	Then the response contains expiration
 	Then the response contains token
 	Then the response contains refresh_token
-
-
-
-Scenario: A command can delete expired sessions from database
-	Given that I'm in the root directory
-	When I run artisan's task token:clean
-	Then I should get:
-	"""
-	All expired tokens were deleted.
-	"""
-
-Scenario: A command can delete all tokens
-	Given that I'm in the root directory
-	When I run artisan's task token:delete
-	Then I should get:
-	"""
-	All tokens were deleted.
-	"""
+	Then I store the response for user indentification
