@@ -15,13 +15,20 @@ Route::get('/', function()
 	return View::make('hello');
 });
 
+/* Authentication */
 Route::post('/auth', 'AuthController@getToken');
 Route::post('/auth/refresh', 'AuthController@refreshToken');
+
+/* User creation */
 Route::post('/users', 'UsersController@create');
 
 Route::group(array('before' => 'api.auth'), function()
 {
+	/* User */
 	Route::get('/me', 'UsersController@showMe');
 	Route::put('/me', 'UsersController@editMe');
+
+	/* Band */
 	Route::post('/bands', 'BandsController@create');
+	Route::get('/bands/{id}/members', 'BandsController@showMembers');
 });
