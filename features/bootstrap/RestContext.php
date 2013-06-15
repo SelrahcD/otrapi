@@ -18,6 +18,7 @@ class RestContext extends BehatContext
 
     private $parameters = array();
 
+    protected $user = null;
     protected static $userTokens = array();
     protected $storage = array();
 
@@ -181,17 +182,19 @@ class RestContext extends BehatContext
      */
     public function thatIMConnectedAsUser($user)
     {
-      if(array_key_exists($user, static::$userTokens))
+      $this->user = $user;
+
+      if(array_key_exists($this->user, static::$userTokens))
       {
-        $token = static::$userTokens[$user];
+        $token = static::$userTokens[$this->user];
       }
       else
       {
-        $token = $this->getToken($user);
-        static::$userTokens[$user] = $token;
+        $token = $this->getToken($this->user);
+        static::$userTokens[$this->user] = $token;
       }
 
-      $this->token = $token;
+      $this->token = $token->token;
     }
 
     protected function getToken($user)
@@ -210,14 +213,7 @@ class RestContext extends BehatContext
 
         $response = $this->client->post($baseUrl.'/auth' ,null,$postFields)->send();
 
-        $data = json_decode($response->getBody(true));
-
-        if(!property_exists($data, 'token'))
-        {
-          throw new \Exception('No token provided in response. Reponse :' . $response->getBody(true));
-        }
-
-        return $data->token;
+        return json_decode($response->getBody(true));
     }
 
     protected function transformURL($value)
