@@ -36,5 +36,7 @@ class BandsController extends BaseController {
 		{
 			throw new NotFoundException;
 		}
+
+		return $band->users;
 	}
 }

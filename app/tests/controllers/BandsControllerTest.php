@@ -48,6 +48,14 @@ class BandsControllerTest extends TestCase {
 		$this->controller->showMembers(1);
 	}
 
+	public function testShowMembersReturnsMembers()
+	{
+		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
+		$band->shouldReceive('getAttribute')->once()->with('users')->andReturn('members');
+		$response = $this->controller->showMembers(1);
+		$this->assertEquals('members', $response);
+	}
+
 	protected function getMocks()
 	{
 		return array(
