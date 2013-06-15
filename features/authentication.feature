@@ -57,3 +57,23 @@ Scenario: I can refresh my token
 	Then the response contains token
 	Then the response contains refresh_token
 	Then I store the response for user indentification
+
+Scenario: If refresh token isn't valid I get a 400 status code
+	Given that email is "c.desneuf@gmail.com"
+	Given that password is "password"
+	When I make a POST request on "/auth"
+	Then the response is JSON
+	Then the response status code is 200
+	Then the response contains expiration
+	Then the response contains token
+	Then the response contains refresh_token
+	Given that I'm connected as user c.desneuf@gmail.com
+	Given that refresh_token is "badToken"
+	When I make a POST request on "/auth/refresh"
+	Then the response is JSON
+	Then the response status code is 400
+
+Scenario: If I don't provide a token for refresh I get a 401
+	When I make a POST request on "/auth/refresh"
+	Then the response is JSON
+	Then the response status code is 401
