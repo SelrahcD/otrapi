@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Auth\UserInterface;
+use Illuminate\Auth\UserInterface,
+	LaravelBook\Ardent\Ardent;
 
 class User extends Ardent implements UserInterface {
 
