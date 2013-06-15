@@ -8,3 +8,5 @@ Scenario: A authenticated user can create a band and is band member
 	Then the response status code is 200
 	Then the response contains id
 	Then the response contains name and is "Taskane"
+	When I make a GET request on "/bands/{id}/members"
+	Then the response status code is 200
