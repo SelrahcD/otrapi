@@ -61,7 +61,7 @@ class RestContext extends BehatContext
      */
     public function thatParameterIs($name, $value)
     {
-      $this->restObject->$name = $value;
+      $this->restObject->$name = $this->replaceValueIfNeeded($value);
     }
 
     /**
@@ -225,13 +225,7 @@ class RestContext extends BehatContext
       for($i = 0; $i < $max; $i++)
       {
 
-        if(Str::is('{*}', $segments[$i]))
-        {
-          $key = substr(substr($segments[$i], 1), 0, -1);
-          $segments[$i] = $this->get($key);
-        }
-
-        $res .= $segments[$i];
+        $res .= $this->replaceValueIfNeeded($segments[$i]);
         
         if($i < ($max - 1))
         {
@@ -241,6 +235,17 @@ class RestContext extends BehatContext
       }
 
       return $res;
+    }
+
+    protected function replaceValueIfNeeded($value)
+    {
+      if(Str::is('{*}', $value))
+      {
+        $key = substr(substr($value, 1), 0, -1);
+        return $this->get($key);
+      }
+
+      return $value;
     }
 
     protected function store($key, $value)
