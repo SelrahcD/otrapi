@@ -214,7 +214,16 @@ class RestContext extends BehatContext
         $response = $this->client->post($baseUrl.'/auth' ,null,$postFields)->send();
 
         return json_decode($response->getBody(true));
+    } 
+
+    /**
+     * @Then /^I store the response for user indentification$/
+     */
+    public function iStoreTheResponseForUserIndentification()
+    {
+      static::$userTokens[$this->user] = json_decode($this->response->getBody(true));
     }
+
 
     protected function transformURL($value)
     {
