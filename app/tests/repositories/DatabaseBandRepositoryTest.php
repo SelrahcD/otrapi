@@ -32,6 +32,13 @@ class DatabaseBandRepositoryTest extends TestCase {
 		$this->repo->store($band);
 	}
 
+	// public function testGetReturnsABand()
+	// {
+	// 	$this->mocks['model']->shouldReceive('find')->once()->with('id')->andReturn(m::mock('Band'));
+	// 	$result = $this->repo->get(1);
+	// 	$this->assertInstanceOf('Band', $result);
+	// }
+
 	private function getMocks()
 	{
 		return array(

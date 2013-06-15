@@ -28,4 +28,9 @@ class DatabaseBandRepository implements BandRepositoryInterface {
 	{
 		$band->save();
 	}
+
+	public function get($id)
+	{
+		return $this->model->find($id);
+	}
 }
