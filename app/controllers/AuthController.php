@@ -55,7 +55,7 @@ class AuthController extends BaseController {
 	public function getToken()
 	{
 
-		if(!($user = $this->userRepository->getUserByCredentials(Input::all())))
+		if(!$user = $this->userRepository->getUserByCredentials(Input::all()))
 		{
 			throw new AuthenticationException('Can\'t find user from credentials');
 		}
@@ -66,7 +66,7 @@ class AuthController extends BaseController {
 		}
 
 		// If we can't find a valid token for user create a new one
-		if(!($token = $this->tokenRepository->getForUser($user)))
+		if(!$token = $this->tokenRepository->getForUser($user))
 		{
 			$token = $this->tokenFactory->createTokenForUser($user);
 			
@@ -83,12 +83,12 @@ class AuthController extends BaseController {
 	 */
 	public function refreshToken()
 	{
-		if(!($tokenId = Request::getUser()))
+		if(!$tokenId = Request::getUser())
 		{
 			throw new AuthenticationException;
 		}
 
-		if(!($user = $this->userRepository->getUserByToken($tokenId, false)))
+		if(!$user = $this->userRepository->getUserByToken($tokenId, false))
 		{
 			throw new AuthenticationException;
 		}
