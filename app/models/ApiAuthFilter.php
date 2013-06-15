@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\Request,
+	Illuminate\Support\Facades\Auth;
+
 class ApiAuthFilter {
 
 	/**
