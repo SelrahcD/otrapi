@@ -136,16 +136,9 @@ class RestContext extends BehatContext
 
       $names = explode('.', $name);
 
-      foreach($names as $name)
+      if(!$data = $this->searchElement($data, $names))
       {
-        if(!property_exists($data, $name))
-        {
-          throw new \Exception('Response doesn\'t contain ' . $name);
-        }
-        else
-        {
-          $data = $data->{$name};
-        }
+        throw new \Exception('Response doesn\'t contain ' . $name);
       }
 
       $this->store($name, $data);
@@ -158,9 +151,20 @@ class RestContext extends BehatContext
     {
       $data = json_decode((string) $this->response->getBody());
 
-      if($data->{$name} != $value)
+      $names = explode('.', $name);
+
+      if(strpos($name, '*') === false)
       {
-        throw new \Exception('Value doesn\'t not match expected value. Received : ' . $data->{$name} . ' Expected : ' . $value);
+        if(($res = $this->searchElement($data, $names)) != $value)
+        {
+          throw new \Exception('Value doesn\'t not match expected value. Received : ' . $res . ' Expected : ' . $value);
+        }
+      }
+      else {
+        if(!in_array($value, $this->searchElement($data, $names, true)))
+        {
+          throw new \Exception('Can\'t find expected value. Expected : ' . $value);
+        }
       }
     }
 
@@ -171,11 +175,69 @@ class RestContext extends BehatContext
     {
       $data = json_decode((string) $this->response->getBody());
 
-      if(property_exists($data, $name))
+      $names = explode('.', $name);
+
+      if($this->searchElement($data, $names))
       {
         throw new \Exception('Response contains ' . $name . ' and should not');
       }
     }
+
+    protected function searchElement($data, Array $names = array(), $allMatching = false)
+    {
+      foreach($names as $name)
+      {
+        if(is_array($data) && $name === '*')
+        {
+          unset($names[0]);
+          foreach($data as $row)
+          {
+            $res = $this->searchElement($row, $names);
+
+            if($res && !$allMatching)
+            {
+              $result = $res;
+              break;
+            }
+            else {
+              $result[] = $res;
+            }
+          }
+
+          if(is_null($result) || (is_array($result) && !sizeof($result)))
+          {
+           $data = null;
+          }
+
+          $data = $result;
+          break;
+        }
+        else
+        {
+          if(!is_object($data) && !is_array($data))
+          {
+            $data = null;
+          }
+          else
+          {
+            if(is_array($data) && array_key_exists($name, $data))
+            {
+              $data = $data[$name];
+            }
+            elseif(is_object($data) && property_exists($data, $name))
+            {
+              $data = $data->{$name};
+            }
+            else
+            {
+              $data = null;
+            }
+          }
+        }
+      }
+      return $data;
+    }
+
 
      /**
      * @Given /^that I\'m connected as user ([^"]*)$/
