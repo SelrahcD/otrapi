@@ -24,6 +24,26 @@ Scenario: I cant get a token if I provide unvalid password
 	Then the response is JSON
 	Then the response status code is 401
 
+Scenario: I can refresh my token
+	Given that email is "c.desneuf@gmail.com"
+	Given that password is "password"
+	When I make a POST request on "/auth"
+	Then the response is JSON
+	Then the response status code is 200
+	Then the response contains expiration
+	Then the response contains token
+	Then the response contains refresh_token
+	Given that I'm connected as user c.desneuf@gmail.com
+	Given that refresh_token is "{refresh_token}"
+	When I make a POST request on "/auth/refresh"
+	Then the response is JSON
+	Then the response status code is 200
+	Then the response contains expiration
+	Then the response contains token
+	Then the response contains refresh_token
+
+
+
 Scenario: A command can delete expired sessions from database
 	Given that I'm in the root directory
 	When I run artisan's task token:clean
