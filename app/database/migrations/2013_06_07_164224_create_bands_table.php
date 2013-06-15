@@ -21,7 +21,7 @@ class CreateBandsTable extends Migration {
 
 
 		// Create pivot table
-		Schema::create('bands_users', function($t)
+		Schema::create('band_user', function($t)
 		{
 			$t->integer('band_id');
 			$t->integer('user_id');
@@ -37,7 +37,7 @@ class CreateBandsTable extends Migration {
 	{
 		// Drop tables
 		Schema::drop('bands');
-		Schema::drop('bands_users');
+		Schema::drop('band_user');
 	}
 
 }
