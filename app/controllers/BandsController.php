@@ -26,6 +26,8 @@ class BandsController extends BaseController {
 
 		$this->repo->store($band);
 
+		$band->users()->attach(Auth::user());
+
 		return $band;
 	}
 

@@ -23,6 +23,10 @@ class BandsControllerTest extends TestCase {
 		$this->mocks['repo']->shouldReceive('make')->once()->with($input)->andReturn($band = m::mock('Band'));
 		$band->shouldReceive('validate')->once()->andReturn(true);
 		$this->mocks['repo']->shouldReceive('store')->once()->with($band);
+
+		Auth::shouldReceive('user')->once()->andReturn($user = m::mock('User'));
+		$band->shouldReceive('users')->once()->andReturn($bTM = m::mock('BelongsToMany'));
+		$bTM->shouldReceive('attach')->once()->with($user);
 		$response = $this->controller->create();
 		$this->assertEquals($band, $response);
 	}
