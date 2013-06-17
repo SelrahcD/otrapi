@@ -1,7 +1,7 @@
 Feature: Bands
 
 Scenario: A authenticated user can create a band and is band member
-	Given that I'm connected as user c.desneuf@gmail.com
+	Given that I'm connected as user user1@test.fr
 	Given that name is "Taskane"
 	When I make a POST request on "/bands"
 	Then the response is JSON
@@ -10,4 +10,4 @@ Scenario: A authenticated user can create a band and is band member
 	Then the response contains name and is "Taskane"
 	When I make a GET request on "/bands/{id}/members"
 	Then the response status code is 200
-	Then the response contains *.email and is "c.desneuf@gmail.com"
+	Then the response contains *.email and is "user1@test.fr"

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+eval 'php artisan migrate:reset --env=local'
+eval 'php artisan migrate --env=local'
+eval 'php artisan db:seed --env=local'
+eval 'bin/behat'

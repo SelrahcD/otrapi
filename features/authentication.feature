@@ -16,7 +16,7 @@ Scenario: A command can delete all tokens
 	All tokens were deleted.
 	"""
 Scenario: I can get a token if I provide valid authentication data
-	Given that email is "c.desneuf@gmail.com"
+	Given that email is "user1@test.fr"
 	Given that password is "password"
 	When I make a POST request on "/auth"
 	Then the response is JSON
@@ -26,21 +26,21 @@ Scenario: I can get a token if I provide valid authentication data
 	Then the response contains refresh_token
 
 Scenario: I cant get a token if I provide unvalid email
-	Given that email is "c.desneuf@test.com"
+	Given that email is "user1-bad-email@test.fr"
 	Given that password is "password"
 	When I make a POST request on "/auth"
 	Then the response is JSON
 	Then the response status code is 401
 
 Scenario: I cant get a token if I provide unvalid password
-	Given that email is "c.desneuf@gmail.com"
+	Given that email is "user1@test.fr"
 	Given that password is "wrongPassword"
 	When I make a POST request on "/auth"
 	Then the response is JSON
 	Then the response status code is 401
 
 Scenario: I can refresh my token
-	Given that email is "c.desneuf@gmail.com"
+	Given that email is "user1@test.fr"
 	Given that password is "password"
 	When I make a POST request on "/auth"
 	Then the response is JSON
@@ -48,7 +48,7 @@ Scenario: I can refresh my token
 	Then the response contains expiration
 	Then the response contains token
 	Then the response contains refresh_token
-	Given that I'm connected as user c.desneuf@gmail.com
+	Given that I'm connected as user user1@test.fr
 	Given that refresh_token is "{refresh_token}"
 	When I make a POST request on "/auth/refresh"
 	Then the response is JSON
@@ -59,7 +59,7 @@ Scenario: I can refresh my token
 	Then I store the response for user indentification
 
 Scenario: If refresh token isn't valid I get a 400 status code
-	Given that email is "c.desneuf@gmail.com"
+	Given that email is "user1@test.fr"
 	Given that password is "password"
 	When I make a POST request on "/auth"
 	Then the response is JSON
@@ -67,7 +67,7 @@ Scenario: If refresh token isn't valid I get a 400 status code
 	Then the response contains expiration
 	Then the response contains token
 	Then the response contains refresh_token
-	Given that I'm connected as user c.desneuf@gmail.com
+	Given that I'm connected as user user1@test.fr
 	Given that refresh_token is "badToken"
 	When I make a POST request on "/auth/refresh"
 	Then the response is JSON
