@@ -264,7 +264,7 @@ class RestContext extends BehatContext
         $users = $this->getParameter('users');
         if(!array_key_exists($user, $users))
         {
-          throw \Exception('Unknown user ' . $user . '. Can\'t login. Please insert data in behat.yml');
+          throw new \Exception('Unknown user ' . $user . '. Can\'t login. Please insert data in behat.yml');
         }
 
         $baseUrl = $this->getParameter('base_url');
