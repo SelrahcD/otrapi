@@ -30,6 +30,16 @@ class DatabaseUserRepository implements UserRepositoryInterface {
 	}
 
 	/**
+	 * Get a user using his id
+	 * @param  int $id
+	 * @return User
+	 */
+	public function get($id)
+	{
+		return $this->model->find($id);
+	}
+
+	/**
 	 * Get a user using his credentials
 	 * 
 	 * @param  array  $credentials Should contain a email key
