@@ -31,4 +31,5 @@ Route::group(array('before' => 'api.auth'), function()
 	/* Band */
 	Route::post('/bands', 'BandsController@create');
 	Route::get('/bands/{id}/members', 'BandsController@showMembers');
+	Route::post('/bands/{id}/members', 'BandsController@addMember');
 });

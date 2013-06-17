@@ -60,14 +60,47 @@ class BandsControllerTest extends TestCase {
 		$this->assertEquals('members', $response);
 	}
 
+	/**
+	 * @expectedException NotFoundException
+	 */
+	public function testAddMemberThrowsNotFoundExceptionIfBandIsNotFound()
+	{
+		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn(null);
+		$this->controller->addMember(1);
+	}
+
+	/**
+	 * @expectedException NotFoundException
+	 */
+	public function testAddMemberThrowsNotFoundExceptionIfUIsNotserFound()
+	{
+		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
+		Request::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
+		$this->mocks['userRepo']->shouldReceive('get')->once()->with(1)->andReturn(null);
+		$this->controller->addMember(1);
+	}
+
+	public function testAddMemberAddsUserToBandMemebrs()
+	{
+		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
+		Request::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
+		$this->mocks['userRepo']->shouldReceive('get')->once()->with(1)->andReturn($user = m::mock('User'));
+		$band->shouldReceive('users')->once()->andReturn($bTM = m::mock('BelongsToMany'));
+		$bTM->shouldReceive('attach')->once()->with($user);
+		$band->shouldReceive('getAttribute')->once()->with('users')->andReturn('users_list');
+		$response = $this->controller->addMember(1);
+		$this->assertEquals('users_list', $response);
+	}
+
 	protected function getMocks()
 	{
 		return array(
-			'repo' => Mockery::mock('BandRepositoryInterface'));
+			'repo' => Mockery::mock('BandRepositoryInterface'),
+			'userRepo' => m::mock('UserRepositoryInterface'));
 	}
 
 	protected function getController(Array $mocks = array())
 	{
-		return new BandsController($mocks['repo']);
+		return new BandsController($mocks['repo'], $mocks['userRepo']);
 	}
 }
