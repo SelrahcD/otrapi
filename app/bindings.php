@@ -12,7 +12,7 @@ App::bind('UserRepositoryInterface', function()
 
 App::bind('BandRepositoryInterface', function()
 	{
-		return new DatabaseBandRepository(new Band);
+		return new DatabaseBandRepository(new Band, App::make('db'));
 	});
 
 App::instance('Illuminate\Hashing\HasherInterface', App::make('hash'));
