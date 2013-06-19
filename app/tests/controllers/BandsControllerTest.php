@@ -80,16 +80,14 @@ class BandsControllerTest extends TestCase {
 		$this->controller->addMember(1);
 	}
 
-	public function testAddMemberAddsUserToBandMemebrs()
+	public function testAddMemberAddsUserToBandMembers()
 	{
 		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
 		Request::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
 		$this->mocks['userRepo']->shouldReceive('get')->once()->with(1)->andReturn($user = m::mock('User'));
-		$band->shouldReceive('users')->once()->andReturn($bTM = m::mock('BelongsToMany'));
-		$bTM->shouldReceive('attach')->once()->with($user);
-		$band->shouldReceive('getAttribute')->once()->with('users')->andReturn('users_list');
+		$this->mocks['repo']->shouldReceive('addMember')->once()->with($band, $user);
 		$response = $this->controller->addMember(1);
-		$this->assertEquals('users_list', $response);
+		$this->assertEquals('204', $response->getStatusCode());
 	}
 
 	protected function getMocks()

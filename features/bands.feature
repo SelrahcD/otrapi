@@ -16,6 +16,4 @@ Scenario: A authenticated user can add a user to a band
 	Given that I'm connected as user user1@test.fr
 	Given that user_id is "2"
 	When I make a POST request on "/bands/1/members"
-	Then the response is JSON
-	Then the response status code is 200
-	Then the response contains *.email and is "user2@test.fr"
+	Then the response status code is 204

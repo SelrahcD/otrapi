@@ -62,8 +62,8 @@ class BandsController extends BaseController {
 			throw new NotFoundException;
 		}
 
-		$band->users()->attach($user);
+		$this->bandRepository->addMember($band, $user);
 
-		return $band->users;
+		return Response::make(null, 204);
 	}
 }
