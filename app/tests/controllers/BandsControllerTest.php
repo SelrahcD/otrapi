@@ -62,6 +62,39 @@ class BandsControllerTest extends TestCase {
 	/**
 	 * @expectedException NotFoundException
 	 */
+	public function testEditThrowsNotFoundExceptionIfBandIsNotFound()
+	{
+		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn(null);
+		$this->controller->edit(1);
+	}
+
+	/**
+	 * @expectedException ValidationException
+	 */
+	public function testEditThrowsValidationExceptionIfDataIsntValid()
+	{
+		Request::shouldReceive('all')->once()->andReturn('input');
+		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
+		$band->shouldReceive('fill')->once()->with('input');
+		$band->shouldReceive('validate')->once()->andReturn(false);
+		$band->shouldReceive('errors')->once()->andReturn($errors = array());
+		$this->controller->edit(1);
+	}
+
+	public function testEditReturnsBandAfterStoringItIfOk()
+	{
+		Request::shouldReceive('all')->once()->andReturn('input');
+		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
+		$band->shouldReceive('fill')->once()->with('input');
+		$band->shouldReceive('validate')->once()->andReturn(true);
+		$this->mocks['repo']->shouldReceive('store')->once()->with($band);
+		$response = $this->controller->edit(1);
+		$this->assertEquals($band, $response);
+	}
+
+	/**
+	 * @expectedException NotFoundException
+	 */
 	public function testShowMembersThrowsNotFoundExceptionIfBandIsNotFound()
 	{
 		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn(null);

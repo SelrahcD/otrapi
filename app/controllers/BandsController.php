@@ -49,6 +49,25 @@ class BandsController extends BaseController {
 		return $band;
 	}
 
+	public function edit($bandId)
+	{
+		if(!($band = $this->bandRepository->get($bandId)))
+		{
+			throw new NotFoundException;
+		}
+
+		$band->fill(Input::all());
+
+		if(!$band->validate())
+		{
+			throw new ValidationException($band->errors());
+		}
+
+		$this->bandRepository->store($band);
+
+		return $band;
+	}
+
 
 	public function showMembers($bandId)
 	{
