@@ -39,6 +39,16 @@ class BandsController extends BaseController {
 		return $band;
 	}
 
+	public function show($bandId)
+	{
+		if(!($band = $this->bandRepository->get($bandId)))
+		{
+			throw new NotFoundException;
+		}
+
+		return $band;
+	}
+
 
 	public function showMembers($bandId)
 	{
