@@ -12,6 +12,14 @@ Scenario: A authenticated user can create a band and is band member
 	Then the response status code is 200
 	Then the response contains *.email and is "user1@test.fr"
 
+Scenario: A authenticated user can see a band
+	Given that I'm connected as user user1@test.fr
+	When I make a GET request on "/bands/1"
+	Then the response is JSON
+	Then the response status code is 200
+	Then the response contains id
+	Then the response contains name
+
 Scenario: A authenticated user can add a user to a band
 	Given that I'm connected as user user1@test.fr
 	Given that user_id is "2"
