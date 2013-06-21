@@ -16,6 +16,14 @@ class Band extends Ardent {
 	 */
 	protected $visible = array('id', 'name', 'created_at', 'updated_at');
 
+	/**
+	 * The rules to be applied to the data.
+	 *
+	 * @var array
+	 */
+	public static $rules = array(
+		'name' => 'required',
+		);
 
 	/**
 	 * Get bands members
