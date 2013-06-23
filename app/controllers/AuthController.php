@@ -54,7 +54,8 @@ class AuthController extends BaseController {
 	 */
 	public function getToken()
 	{
-
+		// TODO : Check if both email and password index exist
+		
 		if(!$user = $this->userRepository->getUserByCredentials(Input::all()))
 		{
 			throw new AuthenticationException('Can\'t find user from credentials');
