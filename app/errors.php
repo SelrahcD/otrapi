@@ -10,9 +10,11 @@ App::error(function(Exception $e, $code)
 
 	$default_message = 'An error occured while processing the request';
 
+	$headers = array('Access-Control-Allow-Origin' => '*');
+
 	return Response::json(array(
 		'error' => $e->getMessage() ?: $default_message,
-	), 500);
+	), 500, $headers);
 });
 
 // General HttpException handler
