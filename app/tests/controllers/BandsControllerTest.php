@@ -73,7 +73,7 @@ class BandsControllerTest extends TestCase {
 	 */
 	public function testEditThrowsValidationExceptionIfDataIsntValid()
 	{
-		Request::shouldReceive('all')->once()->andReturn('input');
+		Input::shouldReceive('all')->once()->andReturn('input');
 		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
 		$band->shouldReceive('fill')->once()->with('input');
 		$band->shouldReceive('validate')->once()->andReturn(false);
@@ -83,7 +83,7 @@ class BandsControllerTest extends TestCase {
 
 	public function testEditReturnsBandAfterStoringItIfOk()
 	{
-		Request::shouldReceive('all')->once()->andReturn('input');
+		Input::shouldReceive('all')->once()->andReturn('input');
 		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
 		$band->shouldReceive('fill')->once()->with('input');
 		$band->shouldReceive('validate')->once()->andReturn(true);
@@ -124,7 +124,7 @@ class BandsControllerTest extends TestCase {
 	public function testAddMemberThrowsNotFoundExceptionIfUIsNotserFound()
 	{
 		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
-		Request::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
+		Input::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
 		$this->mocks['userRepo']->shouldReceive('get')->once()->with(1)->andReturn(null);
 		$this->controller->addMember(1);
 	}
@@ -132,7 +132,7 @@ class BandsControllerTest extends TestCase {
 	public function testAddMemberAddsUserToBandMembers()
 	{
 		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
-		Request::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
+		Input::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
 		$this->mocks['userRepo']->shouldReceive('get')->once()->with(1)->andReturn($user = m::mock('User'));
 		$this->mocks['repo']->shouldReceive('addMember')->once()->with($band, $user);
 		$response = $this->controller->addMember(1);
@@ -142,8 +142,9 @@ class BandsControllerTest extends TestCase {
 	protected function getMocks()
 	{
 		return array(
-			'repo' => Mockery::mock('BandRepositoryInterface'),
-			'userRepo' => m::mock('UserRepositoryInterface'));
+			'repo'     => m::mock('BandRepositoryInterface'),
+			'userRepo' => m::mock('UserRepositoryInterface'),
+			);
 	}
 
 	protected function getController(Array $mocks = array())
