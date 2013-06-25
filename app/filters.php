@@ -22,8 +22,9 @@ App::before(function($request)
 App::after(function($request, $response)
 {
 	// CORS for all
-	$response->header('Access-Control-Allow-Origin', '*', true);
-
+	$response->header('Access-Control-Allow-Origin', $request->header('Origin', '*'), true);
+	$response->header('Access-Control-Allow-Headers', 'Authorization');
+	$response->header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS', true);
 	return $response;
 });
 

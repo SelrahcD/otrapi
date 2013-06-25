@@ -9,7 +9,10 @@ App::error(function(Exception $e, $code)
 	Log::error($e);
 
 	$default_message = 'An error occured while processing the request';
-	$headers['Access-Control-Allow-Origin'] = '*';
+	$headers['Access-Control-Allow-Origin'] = Request::header('Origin', '*');
+	$headers['Access-Control-Allow-Headers'] = 'Authorization';
+	$headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
+
 
 	return Response::json(array(
 		'error' => $e->getMessage() ?: $default_message,
@@ -20,7 +23,9 @@ App::error(function(Exception $e, $code)
 App::error(function(Symfony\Component\HttpKernel\Exception\HttpException $e, $code)
 {
 	$headers = $e->getHeaders();
-	$headers['Access-Control-Allow-Origin'] = '*';
+	$headers['Access-Control-Allow-Origin'] = Request::header('Origin', '*');
+	$headers['Access-Control-Allow-Headers'] = 'Authorization';
+	$headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
 
 	switch ($code)
 	{
@@ -50,7 +55,9 @@ App::error(function(Symfony\Component\HttpKernel\Exception\HttpException $e, $co
 App::error(function(ErrorMessageException $e)
 {
 	$messages = $e->getMessages()->all();
-	$headers['Access-Control-Allow-Origin'] = '*';
+	$headers['Access-Control-Allow-Origin'] = Request::header('Origin', '*');
+	$headers['Access-Control-Allow-Headers'] = 'Authorization';
+	$headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
 
 	return Response::json(array(
 		'error' => $messages[0],
@@ -61,7 +68,9 @@ App::error(function(ErrorMessageException $e)
 App::error(function(ValidationException $e)
 {
 	$messages = $e->getMessagesAsArray();
-	$headers['Access-Control-Allow-Origin'] = '*';
+	$headers['Access-Control-Allow-Origin'] = Request::header('Origin', '*');
+	$headers['Access-Control-Allow-Headers'] = 'Authorization';
+	$headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
 
 	return Response::json(array(
 		'error' => $messages,
@@ -72,7 +81,9 @@ App::error(function(ValidationException $e)
 App::error(function(NotFoundException $e)
 {
 	$default_message = 'The requested resource was not found';
-	$headers['Access-Control-Allow-Origin'] = '*';
+	$headers['Access-Control-Allow-Origin'] = Request::header('Origin', '*');
+	$headers['Access-Control-Allow-Headers'] = 'Authorization';
+	$headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
 
 	return Response::json(array(
 		'error' => $e->getMessage() ?: $default_message,
@@ -83,7 +94,6 @@ App::error(function(NotFoundException $e)
 App::error(function(PermissionException $e)
 {
 	$default_message = 'Insufficient privileges to perform this action';
-	$headers['Access-Control-Allow-Origin'] = '*';
 
 	return Response::json(array(
 		'error' => $e->getMessage() ?: $default_message,
@@ -95,7 +105,9 @@ App::error(function(AuthenticationException $e)
 {
 	$default_message = 'Invalid API key';
 	$headers['WWW-Authenticate'] = 'Basic realm="REST API"';
-	$headers['Access-Control-Allow-Origin'] = '*';
+	$headers['Access-Control-Allow-Origin'] = Request::header('Origin', '*');
+	$headers['Access-Control-Allow-Headers'] = 'Authorization';
+	$headers['Access-Control-Allow-Methods'] = 'POST, GET, PUT, DELETE, OPTIONS';
 
 	return Response::json(array(
 		'error' => $e->getMessage() ?: $default_message,
