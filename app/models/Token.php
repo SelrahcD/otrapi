@@ -121,7 +121,7 @@ class Token implements JsonableInterface {
 	 */
 	public function isValid()
 	{
-		return (bool) $this->expiration->diff( new DateTime )->invert;
+		return (bool) $this->getExpiration(true)->diff( new DateTime )->invert;
 	}
 
 	/**
