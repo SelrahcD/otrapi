@@ -37,7 +37,7 @@ class AuthControllerTest extends TestCase {
 	}
 
 
-	public function testAuthWithValidDataReturnsNewTokenIfNoValidExisting()
+	public function testAuthWithValidDataReturnsNewTokenIfNoneFound()
 	{
 		Input::shouldReceive('has')->with('email')->andReturn(true);
 		Input::shouldReceive('has')->with('password')->andReturn(true);
@@ -57,7 +57,7 @@ class AuthControllerTest extends TestCase {
 
 		$this->mocks['hasher']->shouldReceive('check')->with('password', 'hashedPassword')->andReturn(true);
 
-		$this->mocks['tokenRepo']->shouldReceive('getForUser')->once()->with($user)->andReturn(null);
+		$this->mocks['tokenRepo']->shouldReceive('getForUser')->once()->with($user, true)->andReturn(null);
 
 		$this->mocks['tokenRepo']->shouldReceive('store')->once();
 
@@ -65,7 +65,39 @@ class AuthControllerTest extends TestCase {
 		$this->assertInstanceOf('Token', $response);
 	}
 
-	public function testAuthWithValidDataReturnExistingTokenIfExisting()
+	public function testAuthWithValidDataReturnsNewTokenAndDeleteOldIfNoValidExisting()
+	{
+		Input::shouldReceive('has')->with('email')->andReturn(true);
+		Input::shouldReceive('has')->with('password')->andReturn(true);
+		Input::shouldReceive('all')->once()->andReturn(
+			$credentials = array(
+				'email'    => 'c.desneuf@gmail.com',
+				'password' => 'password',
+				)
+			);
+		$this->mocks['userRepo']->shouldReceive('getUserByCredentials')->once()->with($credentials)->andReturn($user = m::mock('User'));
+		$user->shouldReceive('getAttribute')->once()->with('id')->andReturn(1);
+	
+		Input::shouldReceive('input')->once()->with('password', "")->andReturn('password'
+			);
+
+		$user->shouldReceive('getAttribute')->once()->with('password')->andReturn('hashedPassword');
+
+		$this->mocks['hasher']->shouldReceive('check')->with('password', 'hashedPassword')->andReturn(true);
+
+		$this->mocks['tokenRepo']->shouldReceive('getForUser')->once()->with($user, true)->andReturn($token = m::mock('Token'));
+
+		$token->shouldReceive('isValid')->once()->andReturn(false);
+
+		$this->mocks['tokenRepo']->shouldReceive('delete')->once()->with($token);
+
+		$this->mocks['tokenRepo']->shouldReceive('store')->once();
+
+		$response = $this->controller->getToken();
+		$this->assertInstanceOf('Token', $response);
+	}
+
+	public function testAuthWithValidDataReturnExistingTokenIfExistingAndValid()
 	{
 		Input::shouldReceive('has')->with('email')->andReturn(true);
 		Input::shouldReceive('has')->with('password')->andReturn(true);
@@ -84,10 +116,13 @@ class AuthControllerTest extends TestCase {
 
 		$user->shouldReceive('getAttribute')->once()->with('password')->andReturn('hashedPassword');
 
-		$this->mocks['tokenRepo']->shouldReceive('getForUser')->once()->with($user)->andReturn(m::mock('Token'));
+		$this->mocks['tokenRepo']->shouldReceive('getForUser')->once()->with($user, true)->andReturn($token = m::mock('Token'));
+
+		$token->shouldReceive('isValid')->once()->andReturn(true);
 
 		$response = $this->controller->getToken();
 		$this->assertInstanceOf('Token', $response);
+		$this->assertEquals($response, $token);		
 	}
 
 	/**

@@ -70,12 +70,18 @@ class AuthController extends BaseController {
 		}
 
 		// If we can't find a valid token for user create a new one
-		if(!$token = $this->tokenRepository->getForUser($user))
+		if((!$token = $this->tokenRepository->getForUser($user, true)) || !$token->isValid())
 		{
+			if($token)
+			{
+				$this->tokenRepository->delete($token);
+			}
+			
 			$token = $this->tokenFactory->createTokenForUser($user);
 			
 			$this->tokenRepository->store($token);
 		}
+
 
 		return $token;
 	}
