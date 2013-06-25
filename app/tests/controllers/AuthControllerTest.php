@@ -1,7 +1,6 @@
 <?php
  
-use Mockery as m,
-	Illuminate\Support\Facades\Input;
+use Mockery as m;
 
 class AuthControllerTest extends TestCase {
 
@@ -17,8 +16,31 @@ class AuthControllerTest extends TestCase {
 		m::close();
 	}
 
+	/**
+	 * @expectedException ErrorMessageException
+	 */
+	public function testAuthThrowsErrorMessageEXceptionIfEmailIsMissing()
+	{
+		Input::shouldReceive('has')->with('email')->andReturn(false);
+		Input::shouldReceive('has')->with('password')->andReturn(true);
+		$this->controller->getToken();
+	}
+
+	/**
+	 * @expectedException ErrorMessageException
+	 */
+	public function testAuthThrowsErrorMessageEXceptionIfPasswordIsMissing()
+	{
+		Input::shouldReceive('has')->with('email')->andReturn(true);
+		Input::shouldReceive('has')->with('password')->andReturn(false);
+		$this->controller->getToken();
+	}
+
+
 	public function testAuthWithValidDataReturnsNewTokenIfNoValidExisting()
 	{
+		Input::shouldReceive('has')->with('email')->andReturn(true);
+		Input::shouldReceive('has')->with('password')->andReturn(true);
 		Input::shouldReceive('all')->once()->andReturn(
 			$credentials = array(
 				'email'    => 'c.desneuf@gmail.com',
@@ -45,6 +67,8 @@ class AuthControllerTest extends TestCase {
 
 	public function testAuthWithValidDataReturnExistingTokenIfExisting()
 	{
+		Input::shouldReceive('has')->with('email')->andReturn(true);
+		Input::shouldReceive('has')->with('password')->andReturn(true);
 		Input::shouldReceive('all')->once()->andReturn(
 			$credentials = array(
 				'email'    => 'c.desneuf@gmail.com',
@@ -71,6 +95,8 @@ class AuthControllerTest extends TestCase {
 	 */
 	public function testAuthWithUnvalidUsernameThrowsAuthenticationException()
 	{
+		Input::shouldReceive('has')->with('email')->andReturn(true);
+		Input::shouldReceive('has')->with('password')->andReturn(true);
 		Input::shouldReceive('all')->once()->andReturn(
 			$credentials = array(
 				'email'    => 'c.desneuf@gmail.com',
@@ -87,6 +113,8 @@ class AuthControllerTest extends TestCase {
 	 */
 	public function testAuthWithUnvalidPasswordThrowsAuthenticationException()
 	{
+		Input::shouldReceive('has')->with('email')->andReturn(true);
+		Input::shouldReceive('has')->with('password')->andReturn(true);
 		Input::shouldReceive('all')->once()->andReturn(
 			$credentials = array(
 				'email'    => 'c.desneuf@gmail.com',
