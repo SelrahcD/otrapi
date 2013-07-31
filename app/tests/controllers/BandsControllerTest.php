@@ -14,21 +14,23 @@ class BandsControllerTest extends TestCase {
 		parent::setUp();
 
 		$this->mocks = $this->getMocks();
-		$this->controller = $this->getController($this->mocks);
 	}
 
 	public function testCreateBandStoresBandIfValidAndReturnsIt()
 	{
-		Input::shouldReceive('all')->once()->andReturn($input = 'input');
-		$this->mocks['repo']->shouldReceive('make')->once()->with($input)->andReturn($band = m::mock('Band'));
-		$band->shouldReceive('validate')->once()->andReturn(true);
-		$this->mocks['repo']->shouldReceive('store')->once()->with($band);
+		$this->be($user = new User);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
 
-		Auth::shouldReceive('user')->once()->andReturn($user = m::mock('User'));
-		$band->shouldReceive('users')->once()->andReturn($bTM = m::mock('BelongsToMany'));
-		$bTM->shouldReceive('attach')->once()->with($user);
-		$response = $this->controller->create();
-		$this->assertEquals($band, $response);
+		$this->mocks['bandRepository']->shouldReceive('store')->once();
+
+		$this->mocks['bandRepository']->shouldReceive('addMember')->once()->with('Band', $user);
+
+		$input = array(
+			'name' => 'My band name',
+			);
+
+		$response = $this->call('POST', 'bands', $input);
+		$this->assertInstanceOf('Band', $response->getOriginalContent());
 	}
 
 	/**
@@ -36,11 +38,11 @@ class BandsControllerTest extends TestCase {
 	 */
 	public function testCreateThrowsValidationExceptionIfDataIsntValid()
 	{
-		Input::shouldReceive('all')->once()->andReturn($input = 'input');
-		$this->mocks['repo']->shouldReceive('make')->once()->with($input)->andReturn($band = m::mock('Band'));
-		$band->shouldReceive('validate')->once()->andReturn(false);
-		$band->shouldReceive('errors')->once()->andReturn($errors = array());
-		$this->controller->create();
+		$input = array(
+			'name' => '',
+			);
+
+		$this->call('POST', 'bands', $input);
 	}
 
 	/**
@@ -48,15 +50,21 @@ class BandsControllerTest extends TestCase {
 	 */
 	public function testShowThrowsNotFoundExceptionIfBandIsNotFound()
 	{
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn(null);
-		$this->controller->show(1);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn(null);
+
+		$this->call('GET', 'bands/1');
 	}
 
 	public function testShowReturnsTheBandIfFound()
 	{
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn('band');
-		$response = $this->controller->show(1);
-		$this->assertEquals('band', $response);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn('band');
+
+		$response = $this->call('GET', 'bands/1');
+		$this->assertEquals('band', $response->getOriginalContent());
 	}
 
 	/**
@@ -64,32 +72,43 @@ class BandsControllerTest extends TestCase {
 	 */
 	public function testEditThrowsNotFoundExceptionIfBandIsNotFound()
 	{
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn(null);
-		$this->controller->edit(1);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn(null);
+
+		$this->call('PUT', 'bands/1');
 	}
+
 
 	/**
 	 * @expectedException ValidationException
 	 */
 	public function testEditThrowsValidationExceptionIfDataIsntValid()
 	{
-		Input::shouldReceive('all')->once()->andReturn('input');
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
-		$band->shouldReceive('fill')->once()->with('input');
-		$band->shouldReceive('validate')->once()->andReturn(false);
-		$band->shouldReceive('errors')->once()->andReturn($errors = array());
-		$this->controller->edit(1);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn(new Band);
+
+		$input = array(
+			'name' => '',
+			);
+
+		$this->call('PUT', 'bands/1', $input);
 	}
 
 	public function testEditReturnsBandAfterStoringItIfOk()
 	{
-		Input::shouldReceive('all')->once()->andReturn('input');
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
-		$band->shouldReceive('fill')->once()->with('input');
-		$band->shouldReceive('validate')->once()->andReturn(true);
-		$this->mocks['repo']->shouldReceive('store')->once()->with($band);
-		$response = $this->controller->edit(1);
-		$this->assertEquals($band, $response);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn($band = new Band);
+		
+		$this->mocks['bandRepository']->shouldReceive('store')->once()->with($band);
+
+		$input = array(
+			'name' => 'My band name',
+			);
+
+		$this->call('PUT', 'bands/1', $input);
 	}
 
 	/**
@@ -97,16 +116,23 @@ class BandsControllerTest extends TestCase {
 	 */
 	public function testShowMembersThrowsNotFoundExceptionIfBandIsNotFound()
 	{
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn(null);
-		$this->controller->showMembers(1);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn(null);
+
+		$this->call('GET', 'bands/1/members');
 	}
 
 	public function testShowMembersReturnsMembers()
 	{
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
+
 		$band->shouldReceive('getAttribute')->once()->with('users')->andReturn('members');
-		$response = $this->controller->showMembers(1);
-		$this->assertEquals('members', $response);
+
+		$response = $this->call('GET', 'bands/1/members');
+		$this->assertEquals('members', $response->getOriginalContent());
 	}
 
 	/**
@@ -114,8 +140,11 @@ class BandsControllerTest extends TestCase {
 	 */
 	public function testAddMemberThrowsNotFoundExceptionIfBandIsNotFound()
 	{
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn(null);
-		$this->controller->addMember(1);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn(null);
+
+		$this->call('POST', 'bands/1/members');
 	}
 
 	/**
@@ -123,32 +152,50 @@ class BandsControllerTest extends TestCase {
 	 */
 	public function testAddMemberThrowsNotFoundExceptionIfUIsNotserFound()
 	{
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
-		Input::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
-		$this->mocks['userRepo']->shouldReceive('get')->once()->with(1)->andReturn(null);
-		$this->controller->addMember(1);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+		$this->app->instance('UserRepositoryInterface', $this->mocks['userRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn(new Band);
+
+		$this->mocks['userRepository']->shouldReceive('get')->once()->with(12)->andReturn(null);
+
+		$input = array(
+			'user_id' => 12,
+			);
+
+		$this->call('POST', 'bands/1/members', $input);
 	}
 
 	public function testAddMemberAddsUserToBandMembers()
 	{
-		$this->mocks['repo']->shouldReceive('get')->once()->with(1)->andReturn($band = m::mock('Band'));
-		Input::shouldReceive('input')->once()->with('user_id', '')->andReturn(1);
-		$this->mocks['userRepo']->shouldReceive('get')->once()->with(1)->andReturn($user = m::mock('User'));
-		$this->mocks['repo']->shouldReceive('addMember')->once()->with($band, $user);
-		$response = $this->controller->addMember(1);
+		$this->app->instance('BandRepositoryInterface', $this->mocks['bandRepository']);
+		$this->app->instance('UserRepositoryInterface', $this->mocks['userRepository']);
+
+		$this->mocks['bandRepository']->shouldReceive('get')->once()->with(1)->andReturn($band = new Band);
+
+		$this->mocks['userRepository']->shouldReceive('get')->once()->with(12)->andReturn($user = new User);
+
+		$this->mocks['bandRepository']->shouldReceive('addMember')->once()->with($band, $user);
+
+		$input = array(
+			'user_id' => 12,
+			);
+
+		$response = $this->call('POST', 'bands/1/members', $input);
 		$this->assertEquals('204', $response->getStatusCode());
 	}
 
 	protected function getMocks()
 	{
-		return array(
-			'repo'     => m::mock('BandRepositoryInterface'),
-			'userRepo' => m::mock('UserRepositoryInterface'),
-			);
-	}
+		$bandRepositoryOriginal = $this->app->make('BandRepositoryInterface');
+		$bandRepository = m::mock($bandRepositoryOriginal);
 
-	protected function getController(Array $mocks = array())
-	{
-		return new BandsController($mocks['repo'], $mocks['userRepo']);
+		$userRepositoryOriginal = $this->app->make('UserRepositoryInterface');
+		$userRepository = m::mock($userRepositoryOriginal);
+
+		return array(
+			'bandRepository' => $bandRepository,
+			'userRepository' => $userRepository,
+			);
 	}
 }
